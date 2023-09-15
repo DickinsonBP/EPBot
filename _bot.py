@@ -1,4 +1,6 @@
 import discord
+from discord.ext import commands
+
 from flask import Flask
 from threading import Thread
 
@@ -35,8 +37,7 @@ class EPBot(discord.Client):
         await message.channel.send(command[1])
 
   async def on_member_join(self, member):
-    role = discord.utils.get(member.guild.roles, name='NOOB')
-    await member.add_roles(role)
+    await member.send("Hola!!")
 
   #basic !command
   def setCommand(self, command, text):
