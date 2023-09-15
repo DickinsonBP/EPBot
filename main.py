@@ -3,18 +3,20 @@ import discord
 
 my_secret = os.environ['TOKEN']
 
+
 class MyClient(discord.Client):
-    async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
 
-    async def on_message(self, message):
-        # we do not want the bot to reply to itself
-        if message.author.id == self.user.id:
-            return
+  async def on_ready(self):
+    print(f'Logged in as {self.user} (ID: {self.user.id})')
+    print('------')
 
-        if message.content.startswith('!hello'):
-            await message.reply('Hello!', mention_author=True)
+  async def on_message(self, message):
+    # we do not want the bot to reply to itself
+    if message.author.id == self.user.id:
+      return
+
+    if message.content.startswith('!hello'):
+      await message.reply('Hello %s!' % self.user.name, mention_author=True)
 
 
 intents = discord.Intents.default()
