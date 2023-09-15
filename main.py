@@ -1,26 +1,11 @@
 import os
 import discord
-
-my_secret = os.environ['TOKEN']
-
-
-class MyClient(discord.Client):
-
-  async def on_ready(self):
-    print(f'Logged in as {self.user} (ID: {self.user.id})')
-    print('------')
-
-  async def on_message(self, message):
-    # we do not want the bot to reply to itself
-    if message.author.id == self.user.id:
-      return
-
-    if message.content.startswith('!hello'):
-      await message.reply('Hello %s!' % self.user.name, mention_author=True)
-
+from _bot import EPBot
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = MyClient(intents=intents)
-client.run(my_secret)
+bot = EPBot(intents=intents)
+bot.setCommand("!hello", "Hello!")
+
+bot.run(os.environ['TOKEN'])
