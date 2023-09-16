@@ -5,16 +5,6 @@ from _bot import keep_alive
 
 TOKEN = os.environ['TOKEN']
 
-#command dictionary
-__commands = {
-    "!hola":
-    "Hola!!!",
-    "!twitch":
-    """Estos son los canales de twitch de mis amigos!
-      - Alis: https://www.twitch.tv/alis_trh
-    """
-}
-
 intents = discord.Intents.all()
 intents.message_content = True
 
@@ -37,17 +27,16 @@ async def on_member_join(member):
   await member.add_roles(role)
 
 
-@bot.event
-async def on_message(message):
-  # we do not want the bot to reply to itself
-  if message.author == bot.user:
-    return
+@bot.command(pass_context=True)
+async def hola(ctx):
+  await ctx.send("Holaaa!!! Soy el fokin EPBot")
 
-  for command, text in __commands.items():
-    if (message.content == command):
-      print("Channel: {0.channel} | User {0.author} : {0.content}".format(
-          message))
-      await message.channel.send(text)
+
+@bot.command(pass_context=True)
+async def twitch(ctx):
+  await ctx.send("""Estos son los canales de twitch de mis amigos!
+      - Alis: https://www.twitch.tv/alis_trh
+    """)
 
 
 bot.run(TOKEN)
