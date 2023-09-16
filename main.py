@@ -3,7 +3,8 @@ import discord
 from discord.ext import commands
 from _bot import keep_alive
 import aiohttp
-import openai
+#import openai
+import json
 
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
@@ -83,6 +84,38 @@ async def image(ctx, *, search):
   mbed.set_image(url=json_data['urls']['regular'])
   await ctx.send(embed=mbed)
 
+
+@bot.command()
+async def add_birthday(ctx, member, birthday):
+  f = open("birthdays.json")
+  data = json.load(f)
+  f.close()
+
+  member = member.replace('<', '')
+  member = member.replace('>', '')
+  member = member.replace('@', '')
+
+  data.update({member: birthday})
+
+  with open("birthdays.json", "w") as json_file:
+    json.dump(data, json_file)
+
+  await ctx.send("Se ha guardado el cumpleaños correctamente!")
+
+
+@bot.command()
+async def next_birthdays(ctx):
+  f = open("birthdays.json")
+  data = json.load(f)
+  mbed = discord.Embed(title='Los siguientes cumpleaños son:')
+
+  for id, birthday in data.items():
+    user = bot.get_user(int(id)).mention
+    mbed.add_field(name="", value="%s %s" % (user, birthday), inline=False)
+
+  await ctx.send(embed=mbed)
+
+
 #TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
 #@bot.command()
 #async def gpt(ctx, content='hola'):
@@ -91,6 +124,5 @@ async def image(ctx, *, search):
 #                                      prompt=content,
 #                                      max_tokens=2048)
 #  await ctx.send(response.choices[0].text)
-
 
 bot.run(TOKEN)
