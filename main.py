@@ -85,6 +85,10 @@ async def image(ctx, *, search):
   await ctx.send(embed=mbed)
 
 
+async def _order_dict(birthdays):
+  pass
+
+
 @bot.command()
 async def add_birthday(ctx, member, birthday):
   f = open("birthdays.json")
@@ -107,6 +111,7 @@ async def add_birthday(ctx, member, birthday):
 async def next_birthdays(ctx):
   f = open("birthdays.json")
   data = json.load(f)
+  data = _order_dict(data)
   mbed = discord.Embed(title='Los siguientes cumpleaños son:')
 
   for id, birthday in data.items():
@@ -114,6 +119,25 @@ async def next_birthdays(ctx):
     mbed.add_field(name="", value="%s %s" % (user, birthday), inline=False)
 
   await ctx.send(embed=mbed)
+
+
+@bot.command()
+async def poll(ctx, question, *options: str):
+  reactions = [
+      '🅰', '🅱', '©', '🍀', '🎲', '🎉', '🎊', '🔥', '💡', '💥', '🚀', '🚁', '🚂', '🚕',
+      '🛸', '🛰️', '🚤', '🛳️'
+  ]
+
+  if len(options) <= 1:
+    await ctx.send("```Error! A poll must have more than one option.```")
+    return
+
+  mbed = discord.Embed(title=question, color=discord.Color.red())
+  for i in range(len(options)):
+    mbed.add_field(name=options[i], value=reactions[i], inline=True)
+  message = await ctx.send(embed=mbed)
+  for i in range(len(options)):
+    await message.add_reaction(reactions[i])
 
 
 #TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
