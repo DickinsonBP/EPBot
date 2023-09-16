@@ -2,16 +2,15 @@ import os
 import discord
 from discord.ext import commands
 from _bot import keep_alive
+import aiohttp
 
 TOKEN = os.environ['TOKEN']
+UNSPLASH = os.environ['UNSPLASH']
 
 intents = discord.Intents.all()
 intents.message_content = True
 
 keep_alive()
-#bot.setCommand("!hello", "Hello!")
-#bot.setCommand("!penis", "Esto es un penis jeje :P")
-#bot.setCommand("!malo", "no seas malo :P")
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -40,7 +39,7 @@ async def members_channel(ctx):
       guild.me: discord.PermissionOverwrite(read_messages=True)
   }
   await guild.create_voice_channel('Total miembros %s' % total_members,
-                                  overwrites=overwrites)
+                                   overwrites=overwrites)
 
 
 @bot.command()
@@ -69,6 +68,18 @@ async def twitch(ctx):
   await ctx.send("""Estos son los canales de twitch de mis amigos!
       - Alis: https://www.twitch.tv/alis_trh
     """)
+
+
+@bot.command()
+async def image(ctx, *, search):
+  search = search.replace(' ', '')
+  url = f'https://api.unsplash.com/photos/random/?query={search}&orientation=squarish&content_filter=high&client_id={UNSPLASH}'
+  async with aiohttp.ClientSession() as session:
+    request = await session.get(url)
+    json_data = await request.json()
+  mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!'%search)
+  mbed.set_image(url=json_data['urls']['regular'])
+  await ctx.send(embed=mbed)
 
 
 @bot.command()
