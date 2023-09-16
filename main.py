@@ -5,6 +5,7 @@ from _bot import keep_alive
 import aiohttp
 #import openai
 import json
+from datetime import date
 
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
@@ -84,11 +85,25 @@ async def image(ctx, *, search):
   mbed.set_image(url=json_data['urls']['regular'])
   await ctx.send(embed=mbed)
 
+def birthday_key(user):
+  today = date.today()
+  current_day = int(today.strftime("%d"))
+  current_month = int(today.strftime("%m"))
+  day = int(user["birthday"].split("/")[0])
+  month = int(user["birthday"].split("/")[1])
+  
+  if current_month <= month:
+      month = month - current_month
+  else: 
+      month = 12 - (current_month - month)
 
-async def _order_dict(birthdays):
-  pass
+  if current_day <= day:
+      day = day - current_day
+  else: 
+     day = 31 - (current_day - day)
 
-
+  return month, day
+  
 @bot.command()
 async def add_birthday(ctx, member, birthday):
   f = open("birthdays.json")
@@ -99,7 +114,7 @@ async def add_birthday(ctx, member, birthday):
   member = member.replace('>', '')
   member = member.replace('@', '')
 
-  data.update({member: birthday})
+  data.append({"userID": member, "birthday": birthday})
 
   with open("birthdays.json", "w") as json_file:
     json.dump(data, json_file)
@@ -111,12 +126,12 @@ async def add_birthday(ctx, member, birthday):
 async def next_birthdays(ctx):
   f = open("birthdays.json")
   data = json.load(f)
-  data = _order_dict(data)
+  data = sorted(data, key=birthday_key)
   mbed = discord.Embed(title='Los siguientes cumpleaños son:')
 
-  for id, birthday in data.items():
-    user = bot.get_user(int(id)).mention
-    mbed.add_field(name="", value="%s %s" % (user, birthday), inline=False)
+  for user in data:
+    username = bot.get_user(int(user["userID"])).mention
+    mbed.add_field(name="", value="%s %s" % (username, user["birthday"]), inline=False)
 
   await ctx.send(embed=mbed)
 
