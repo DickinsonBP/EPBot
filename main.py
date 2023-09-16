@@ -3,9 +3,11 @@ import discord
 from discord.ext import commands
 from _bot import keep_alive
 import aiohttp
+import openai
 
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
+GPT = os.environ['GPT']
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -77,14 +79,18 @@ async def image(ctx, *, search):
   async with aiohttp.ClientSession() as session:
     request = await session.get(url)
     json_data = await request.json()
-  mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!'%search)
+  mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!' % search)
   mbed.set_image(url=json_data['urls']['regular'])
   await ctx.send(embed=mbed)
 
-
-@bot.command()
-async def gpt(ctx, content='hola'):
-  await ctx.send("Has enviado el siguiente mensaje: " + str(content))
+#TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
+#@bot.command()
+#async def gpt(ctx, content='hola'):
+#  openai.api_key = GPT
+#  response = openai.Completion.create(engine="davinci-002",
+#                                      prompt=content,
+#                                      max_tokens=2048)
+#  await ctx.send(response.choices[0].text)
 
 
 bot.run(TOKEN)
