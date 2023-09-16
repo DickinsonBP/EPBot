@@ -23,7 +23,7 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-  channel = bot.get_channel(1152589104140259448)
+  channel = bot.get_channel(1152589104140259448)  #get the cannel id
   role = discord.utils.get(member.guild.roles, name="ExampleRol")
   await member.add_roles(role)
   await channel.send(
@@ -32,8 +32,36 @@ async def on_member_join(member):
 
 
 @bot.command()
+async def members_channel(ctx):
+  guild = ctx.guild
+  total_members = len(guild.members) - 1
+  overwrites = {
+      guild.default_role: discord.PermissionOverwrite(read_messages=False),
+      guild.me: discord.PermissionOverwrite(read_messages=True)
+  }
+  await guild.create_voice_channel('Total miembros %s' % total_members,
+                                  overwrites=overwrites)
+
+
+@bot.command()
 async def hola(ctx):
-  await ctx.send("Holaaa!!! Soy el fokin EPBot")
+  await ctx.send("""
+  Holaaa!!! Soy el fokin EPBot
+  Puedes usar los siguientes comandos:
+    **!hola**: sirve para mostrar este mismo comando :P
+    **!twitch**: muestra los canales de twitch de nuestros streamers :P
+    **!gpt**: sirve para preguntarle cositas a chatgpt :P (desarrollo)
+    """)
+
+
+@bot.command()
+async def ayuda(ctx):
+  await ctx.send("""
+    Puedes usar los siguientes comandos:
+    **!hola**: sirve para mostrar este mismo comando :P
+    **!twitch**: muestra los canales de twitch de nuestros streamers :P
+    **!gpt**: sirve para preguntarle cositas a chatgpt :P (desarrollo)
+    """)
 
 
 @bot.command()
