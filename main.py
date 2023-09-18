@@ -5,11 +5,18 @@ from _bot import keep_alive
 import aiohttp
 #import openai
 import json
-from datetime import date
+from datetime import date, datetime
+import random
 
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
 GPT = os.environ['GPT']
+
+birthday_photos = [
+    "media/piolin_cumple.jpeg", "media/piolin_cumple2.jpeg",
+    "media/piolin_cumple3.jpeg", "media/piolin_cumple4.jpeg",
+    "media/piolin_cumple5.jpeg"
+]
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -22,7 +29,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
   print("Bot acitvated!")
-  my_loop.start()
+  meme_day.start()
+  check_birthdays.start()
 
 
 @bot.event
@@ -164,9 +172,8 @@ async def poll(ctx, question, *options: str):
 
 
 @tasks.loop(hours=24)
-async def my_loop():
-  mbed = None
-  file = None
+async def meme_day():
+  channel = bot.get_channel(1152589104140259448)
   today = date.today()
   if (today.strftime("%a") == "Thu"):
     file = discord.File('media/jdr.png', filename='jdr.png')
@@ -176,6 +183,7 @@ async def my_loop():
     mbed.add_field(name="Hoy es jueves de racismo!",
                    value="El maldito jueves de racismo!")
     mbed.set_image(url="attachment://jdr.png")
+    await channel.send(file=file, embed=mbed)
   elif (today.strftime("%a") == "Fri"):
     file = discord.File('media/vhn.png', filename='vhn.png')
     mbed = discord.Embed(title='Viernes de humor negro!',
@@ -185,8 +193,28 @@ async def my_loop():
                    value="El maldito viernes de humor negro!")
     mbed.set_image(url="attachment://vhn.png")
 
+    await channel.send(file=file, embed=mbed)
+
+
+@tasks.loop(hours=24)
+async def check_birthdays():
   channel = bot.get_channel(1152589104140259448)
-  await channel.send(file=file, embed=mbed)
+  today = date.today()
+  f = open("birthdays.json")
+  data = json.load(f)
+  for user in data:
+    birthday = datetime.strptime(user["birthday"], "%d/%m/%Y")
+    if (birthday.day == today.day and birthday.month == today.month):
+      username = bot.get_user(int(user["userID"])).mention
+      file = discord.File(random.choice(birthday_photos), filename='image.png')
+
+      mbed = discord.Embed(title='Cumpleaños!', color=discord.Color.gold())
+      mbed.add_field(
+          name="",
+          value="Hoy es el cumpleaños de %s y esta cumpliendo **%s** añoooos!"
+          % (username, today.year - birthday.year))
+      mbed.set_image(url="attachment://image.png")
+      await channel.send(file=file, embed=mbed)
 
 
 #TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
