@@ -139,11 +139,21 @@ async def next_birthdays(ctx):
   data = json.load(f)
   data = sorted(data, key=birthday_key)
   mbed = discord.Embed(title='Los siguientes cumpleaños son:')
-
+  today = datetime.today()
   for user in data:
     username = bot.get_user(int(user["userID"])).mention
+
+    birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
+    if (birthday1.month >= today.month):
+      birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
+    else:
+      birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year + 1)
+
+    birthday = datetime.strptime(birthday, "%d/%m/%Y")
+
     mbed.add_field(name="",
-                   value="%s %s" % (username, user["birthday"]),
+                   value="%s Quedan %s días y **cumple %s añacos LOL**" %
+                   (username, (birthday - today).days, today.year - birthday1.year),
                    inline=False)
 
   await ctx.send(embed=mbed)
@@ -173,6 +183,7 @@ async def poll(ctx, question, *options: str):
 
 @tasks.loop(hours=24)
 async def meme_day():
+  print("Checking meme of the day")
   channel = bot.get_channel(1152589104140259448)
   today = date.today()
   if (today.strftime("%a") == "Thu"):
@@ -198,6 +209,7 @@ async def meme_day():
 
 @tasks.loop(hours=24)
 async def check_birthdays():
+  print("Checking birthday")
   channel = bot.get_channel(1152589104140259448)
   today = date.today()
   f = open("birthdays.json")
