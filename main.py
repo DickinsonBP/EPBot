@@ -57,13 +57,11 @@ async def members_channel(ctx):
 
 @bot.command()
 async def hola(ctx):
-  await ctx.send("""
-  Holaaa!!! Soy el fokin EPBot
-  Puedes usar los siguientes comandos:
-    **!hola**: sirve para mostrar este mismo comando :P
-    **!twitch**: muestra los canales de twitch de nuestros streamers :P
-    **!gpt**: sirve para preguntarle cositas a chatgpt :P (desarrollo)
-    """)
+  dbp = bot.get_user(621672016445046784).mention
+  amb = bot.get_user(490287529833005075).mention
+  mvc = bot.get_user(551191398229999629).mention
+  await ctx.send("""Holaaa!!! Soy el fokin EPBot y he sido creado para teneros aqui a ralla. Mis creadores han sido nada mas y nada menos que **%s, %s y %s**, así que hay que respetarlos sinó os cae shit"""
+                 % (dbp, amb, mvc))
 
 
 @bot.command()
@@ -153,7 +151,8 @@ async def next_birthdays(ctx):
 
     mbed.add_field(name="",
                    value="%s Quedan %s días y **cumple %s añacos LOL**" %
-                   (username, (birthday - today).days, today.year - birthday1.year),
+                   (username,
+                    (birthday - today).days, today.year - birthday1.year),
                    inline=False)
 
   await ctx.send(embed=mbed)
