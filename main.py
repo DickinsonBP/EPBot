@@ -85,25 +85,27 @@ async def image(ctx, *, search):
   mbed.set_image(url=json_data['urls']['regular'])
   await ctx.send(embed=mbed)
 
+
 def birthday_key(user):
   today = date.today()
   current_day = int(today.strftime("%d"))
   current_month = int(today.strftime("%m"))
   day = int(user["birthday"].split("/")[0])
   month = int(user["birthday"].split("/")[1])
-  
+
   if current_month <= month:
-      month = month - current_month
-  else: 
-      month = 12 - (current_month - month)
+    month = month - current_month
+  else:
+    month = 12 - (current_month - month)
 
   if current_day <= day:
-      day = day - current_day
-  else: 
-     day = 31 - (current_day - day)
+    day = day - current_day
+  else:
+    day = 31 - (current_day - day)
 
   return month, day
-  
+
+
 @bot.command()
 async def add_birthday(ctx, member, birthday):
   f = open("birthdays.json")
@@ -131,7 +133,9 @@ async def next_birthdays(ctx):
 
   for user in data:
     username = bot.get_user(int(user["userID"])).mention
-    mbed.add_field(name="", value="%s %s" % (username, user["birthday"]), inline=False)
+    mbed.add_field(name="",
+                   value="%s %s" % (username, user["birthday"]),
+                   inline=False)
 
   await ctx.send(embed=mbed)
 
@@ -146,6 +150,9 @@ async def poll(ctx, question, *options: str):
   if len(options) <= 1:
     await ctx.send("```Error! A poll must have more than one option.```")
     return
+
+  if len(options) == 2 and options[0] == "si" and options[1] == "no":
+    reactions = ['👍', '👎']
 
   mbed = discord.Embed(title=question, color=discord.Color.red())
   for i in range(len(options)):
