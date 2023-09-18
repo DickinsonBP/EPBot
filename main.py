@@ -1,6 +1,6 @@
 import os
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from _bot import keep_alive
 import aiohttp
 #import openai
@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
   print("Bot acitvated!")
+  my_loop.start()
 
 
 @bot.event
@@ -160,6 +161,32 @@ async def poll(ctx, question, *options: str):
   message = await ctx.send(embed=mbed)
   for i in range(len(options)):
     await message.add_reaction(reactions[i])
+
+
+@tasks.loop(hours=24)
+async def my_loop():
+  mbed = None
+  file = None
+  today = date.today()
+  if (today.strftime("%a") == "Thu"):
+    file = discord.File('media/jdr.png', filename='jdr.png')
+    mbed = discord.Embed(title='Jueves de racismo!',
+                         color=discord.Color.gold())
+    mbed.set_thumbnail(url="attachment://jdr.png")
+    mbed.add_field(name="Hoy es jueves de racismo!",
+                   value="El maldito jueves de racismo!")
+    mbed.set_image(url="attachment://jdr.png")
+  elif (today.strftime("%a") == "Fri"):
+    file = discord.File('media/vhn.png', filename='vhn.png')
+    mbed = discord.Embed(title='Viernes de humor negro!',
+                         color=discord.Color.gold())
+    mbed.set_thumbnail(url="attachment://vhn.png")
+    mbed.add_field(name="Hoy es viernes de humor negro!",
+                   value="El maldito viernes de humor negro!")
+    mbed.set_image(url="attachment://vhn.png")
+
+  channel = bot.get_channel(1152589104140259448)
+  await channel.send(file=file, embed=mbed)
 
 
 #TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
