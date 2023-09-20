@@ -153,20 +153,22 @@ async def next_birthdays(ctx):
   mbed = discord.Embed(title='Los siguientes cumpleaños son:')
   today = datetime.today()
   for user in data:
+    year = 0
     username = bot.get_user(int(user["userID"])).mention
 
     birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
     if (birthday1.month >= today.month):
+      year = today.year
       birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
     else:
+      year = today.year + 1
       birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year + 1)
 
     birthday = datetime.strptime(birthday, "%d/%m/%Y")
 
     mbed.add_field(name="",
                    value="%s Quedan %s días y **cumple %s añacos LOL**" %
-                   (username,
-                    (birthday - today).days, today.year - birthday1.year),
+                   (username, (birthday - today).days, year - birthday1.year),
                    inline=False)
 
   await ctx.send(embed=mbed)
