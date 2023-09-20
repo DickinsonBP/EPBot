@@ -97,14 +97,17 @@ async def twitch(ctx):
 
 @bot.command()
 async def image(ctx, *, search):
-  search = search.replace(' ', '')
-  url = f'https://api.unsplash.com/photos/random/?query={search}&orientation=squarish&content_filter=high&client_id={UNSPLASH}'
-  async with aiohttp.ClientSession() as session:
-    request = await session.get(url)
-    json_data = await request.json()
-  mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!' % search)
-  mbed.set_image(url=json_data['urls']['regular'])
-  await ctx.send(embed=mbed)
+  search_formtted = search.replace(' ', '_')
+  url = f'https://api.unsplash.com/photos/random/?query={search_formtted}&orientation=squarish&content_filter=high&client_id={UNSPLASH}'
+  try:
+    async with aiohttp.ClientSession() as session:
+      request = await session.get(url)
+      json_data = await request.json()
+    mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!' % search)
+    mbed.set_image(url=json_data['urls']['regular'])
+    await ctx.send(embed=mbed)
+  except Exception as e:
+    await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search)
 
 
 def birthday_key(user):
