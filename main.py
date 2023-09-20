@@ -35,12 +35,18 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-  channel = bot.get_channel(1152589104140259448)  #get the cannel id
-  role = discord.utils.get(member.guild.roles, name="ExampleRol")
+  channel = bot.get_channel(1019315282138894416)  #get the cannel id
+  role = discord.utils.get(member.guild.roles, name="👽NPC's👽")
   await member.add_roles(role)
   await channel.send(
       "Un aplauso, ha entrado otro retrasad@ a **%s** y se llama....: **%s**" %
       (member.guild.name, member.name))
+
+
+@bot.event
+async def on_member_remove(member):
+  channel = bot.get_channel(1019315282138894416)  #get the cannel id
+  await channel.send("Chao **%s** mariquita" % (member.name))
 
 
 @bot.command()
@@ -60,17 +66,24 @@ async def hola(ctx):
   dbp = bot.get_user(621672016445046784).mention
   amb = bot.get_user(490287529833005075).mention
   mvc = bot.get_user(551191398229999629).mention
-  await ctx.send("""Holaaa!!! Soy el fokin EPBot y he sido creado para teneros aqui a ralla. Mis creadores han sido nada mas y nada menos que **%s, %s y %s**, así que hay que respetarlos sinó os cae shit"""
-                 % (dbp, amb, mvc))
+  await ctx.send(
+      """Holaaa!!! Soy el fokin EPBot y he sido creado para teneros aqui a ralla. Mis creadores han sido nada mas y nada menos que **%s, %s y %s**, así que hay que respetarlos sinó os cae shit. Para saber que comandos se pueden usar ejecuta **!ayuda**"""
+      % (dbp, amb, mvc))
 
 
 @bot.command()
 async def ayuda(ctx):
   await ctx.send("""
     Puedes usar los siguientes comandos:
-    **!hola**: sirve para mostrar este mismo comando :P
+    **!ayuda**: sirve para mostrar esta guia de ayuda
+    **!hola**: sirve para mostrar el saludo del fokin bot
     **!twitch**: muestra los canales de twitch de nuestros streamers :P
-    **!gpt**: sirve para preguntarle cositas a chatgpt :P (desarrollo)
+    **!image**: busca una foto pasada por parámetro. Ej: !image cat
+    **!poll**: genera una encuesta. Ej: !poll "Encuesta" si no
+    **!add_birthday**: añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (mm/dd/YYYY) 
+    **!next_birthdays**: muestra los cumpleaños que vienen!
+    **!talk**: (en desarrollo) hablar con un chatbot
+    **!musica**: (en desarrollo) buscar y escuchar musica
     """)
 
 
@@ -78,6 +91,7 @@ async def ayuda(ctx):
 async def twitch(ctx):
   await ctx.send("""Estos son los canales de twitch de mis amigos!
       - Alis: https://www.twitch.tv/alis_trh
+      - Julio: https://www.twitch.tv/jeidad_
     """)
 
 
@@ -227,14 +241,5 @@ async def check_birthdays():
       mbed.set_image(url="attachment://image.png")
       await channel.send(file=file, embed=mbed)
 
-
-#TODO: look for other library. OpenAI has a free trial but then we have to pay for the API
-#@bot.command()
-#async def gpt(ctx, content='hola'):
-#  openai.api_key = GPT
-#  response = openai.Completion.create(engine="davinci-002",
-#                                      prompt=content,
-#                                      max_tokens=2048)
-#  await ctx.send(response.choices[0].text)
 
 bot.run(TOKEN)
