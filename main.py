@@ -18,6 +18,10 @@ birthday_photos = [
     "media/piolin_cumple5.jpeg"
 ]
 
+#channels id
+welcome = 1019315282138894416
+chateo = 779103315933528075
+
 intents = discord.Intents.all()
 intents.message_content = True
 
@@ -35,7 +39,7 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-  channel = bot.get_channel(1019315282138894416)  #get the cannel id
+  channel = bot.get_channel(welcome)  #get the cannel id
   role = discord.utils.get(member.guild.roles, name="👽NPC's👽")
   await member.add_roles(role)
   await channel.send(
@@ -45,7 +49,7 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-  channel = bot.get_channel(1019315282138894416)  #get the cannel id
+  channel = bot.get_channel(welcome)  #get the cannel id
   await channel.send("Chao **%s** mariquita" % (member.name))
 
 
@@ -107,7 +111,8 @@ async def image(ctx, *, search):
     mbed.set_image(url=json_data['urls']['regular'])
     await ctx.send(embed=mbed)
   except Exception as e:
-    await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search)
+    await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search
+                   )
 
 
 def birthday_key(user):
@@ -202,7 +207,7 @@ async def poll(ctx, question, *options: str):
 @tasks.loop(hours=24)
 async def meme_day():
   print("Checking meme of the day")
-  channel = bot.get_channel(1152589104140259448)
+  channel = bot.get_channel(chateo)
   today = date.today()
   if (today.strftime("%a") == "Thu"):
     file = discord.File('media/jdr.png', filename='jdr.png')
@@ -228,7 +233,7 @@ async def meme_day():
 @tasks.loop(hours=24)
 async def check_birthdays():
   print("Checking birthday")
-  channel = bot.get_channel(1152589104140259448)
+  channel = bot.get_channel(chateo)
   today = date.today()
   f = open("birthdays.json")
   data = json.load(f)
