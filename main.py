@@ -228,6 +228,8 @@ async def meme_day():
     mbed.set_image(url="attachment://vhn.png")
 
     await channel.send(file=file, embed=mbed)
+  else:
+    pass
 
 
 @tasks.loop(hours=24)
