@@ -21,6 +21,7 @@ birthday_photos = [
 #channels id
 welcome = 1019315282138894416
 chateo = 779103315933528075
+test = 969001717175816292
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -35,6 +36,7 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
+  do_something.start()
 
 
 @bot.event
@@ -253,5 +255,9 @@ async def check_birthdays():
       mbed.set_image(url="attachment://image.png")
       await channel.send(file=file, embed=mbed)
 
+@tasks.loop(minutes=3)
+async def do_something():
+  channel = bot.get_channel(test)
+  await channel.send("Mensaje para no morir")
 
 bot.run(TOKEN)
