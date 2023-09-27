@@ -81,19 +81,47 @@ async def hola(ctx):
 
 @bot.command()
 async def ayuda(ctx):
-  await ctx.send("""
-    Puedes usar los siguientes comandos:
-    **!ayuda**: sirve para mostrar esta guia de ayuda
-    **!valorant**: envia un mensaje por DM a EP para jugar al fokin valorant
-    **!hola**: sirve para mostrar el saludo del fokin bot
-    **!twitch**: muestra los canales de twitch de nuestros streamers :P
-    **!image**: busca una foto pasada por parámetro. Ej: !image cat
-    **!poll**: genera una encuesta. Ej: !poll "Encuesta" si no
-    **!add_birthday**: añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (mm/dd/YYYY) 
-    **!next_birthdays**: muestra los cumpleaños que vienen!
-    **!talk**: (en desarrollo) hablar con un chatbot
-    **!musica**: (en desarrollo) buscar y escuchar musica
-    """)
+  author = ctx.message.author.mention
+  mbed = discord.Embed(
+      title='Guia de ayuda!',
+      description=f"{author} aqui puedes ver los comandos que puedes usar!")
+
+  mbed.add_field(name="**!ayuda**",
+                 value="Sirve para mostrar esta guia de ayuda",
+                 inline=False)
+  mbed.add_field(
+      name="**!valorant**",
+      value="Envia un mensaje por DM a EP para jugar al fokin valorant",
+      inline=False)
+  mbed.add_field(name="**!hola**",
+                 value="Sirve para mostrar el saludo del fokin bot",
+                 inline=False)
+  mbed.add_field(
+      name="**!twitch**",
+      value="Muestra los canales de twitch de nuestros streamers :P",
+      inline=False)
+  mbed.add_field(name="**!image**",
+                 value="Busca una foto pasada por parámetro. Ej: !image cat",
+                 inline=False)
+  mbed.add_field(name="**!poll**",
+                 value="Genera una encuesta. Ej: !poll 'Encuesta' si no",
+                 inline=False)
+  mbed.add_field(
+      name="**!add_birthday**",
+      value=
+      "Añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (mm/dd/YYYY)",
+      inline=False)
+  mbed.add_field(name="**!next_birthdays**",
+                 value="Muestra los cumpleaños que vienen",
+                 inline=False)
+  mbed.add_field(name="**!talk**",
+                 value="(en desarrollo) hablar con un chatbot",
+                 inline=False)
+  mbed.add_field(name="**!musica**",
+                 value="(en desarrollo) buscar y escuchar musica",
+                 inline=False)
+
+  await ctx.send(embed=mbed)
 
 
 @bot.command()
@@ -274,7 +302,7 @@ async def valorant(ctx):
       551191398229999629, 589915710583472157
   ]
   #ids = [925870780548526132,621672016445046784,551191398229999629]
-  ids.remove(ctx.message.author.id)  
+  ids.remove(ctx.message.author.id)
   author = ctx.message.author.mention
   for id in ids:
     try:
@@ -286,5 +314,6 @@ async def valorant(ctx):
     except Exception as e:
       print(f"No he podido enviar el mensaje para el id {id}. {e}")
   await ctx.send("Enviando mensajes!")
+
 
 bot.run(TOKEN)
