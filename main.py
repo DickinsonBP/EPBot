@@ -21,7 +21,7 @@ birthday_photos = [
 #channels id
 welcome = 1019315282138894416
 chateo = 779103315933528075
-test = 969001717175816292
+bot_always = 1155897749099786330
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -60,10 +60,12 @@ async def members_channel(ctx):
   guild = ctx.guild
   total_members = len(guild.members) - 1
   overwrites = {
-      guild.default_role: discord.PermissionOverwrite(read_messages=False),
-      guild.me: discord.PermissionOverwrite(read_messages=True)
+      guild.default_role:
+      discord.PermissionOverwrite(view_channel=True, connect=False),
+      guild.me:
+      discord.PermissionOverwrite(view_channel=True)
   }
-  await guild.create_voice_channel('Total miembros %s' % total_members,
+  await guild.create_voice_channel(name=f'Total miembros {total_members}',
                                    overwrites=overwrites)
 
 
@@ -82,6 +84,7 @@ async def ayuda(ctx):
   await ctx.send("""
     Puedes usar los siguientes comandos:
     **!ayuda**: sirve para mostrar esta guia de ayuda
+    **!valorant**: envia un mensaje por DM a EP para jugar al fokin valorant
     **!hola**: sirve para mostrar el saludo del fokin bot
     **!twitch**: muestra los canales de twitch de nuestros streamers :P
     **!image**: busca una foto pasada por parámetro. Ej: !image cat
@@ -255,9 +258,29 @@ async def check_birthdays():
       mbed.set_image(url="attachment://image.png")
       await channel.send(file=file, embed=mbed)
 
+
 @tasks.loop(minutes=3)
 async def do_something():
-  channel = bot.get_channel(test)
+  channel = bot.get_channel(bot_always)
   await channel.send("Mensaje para no morir")
+
+
+@bot.command()
+async def valorant(ctx):
+  ids = [
+      621672016445046784, 630745427842433044, 490287529833005075,
+      348391595613224962, 287305573572018186, 362634148629970944,
+      649732529858805790, 773121539117678622, 621647138539175936,
+      551191398229999629, 589915710583472157
+  ]
+  ids.remove(ctx.message.author.id)  #don't send to the same user
+  author = ctx.message.author.mention
+  print(author)
+  for id in ids:
+    user = bot.get_user(id)
+    await user.send(
+        f"Hola JEJE 👉👈, dice {author} que si quieres jugar valorant :P. Cualquier cosa está en el servidor 🫡"
+    )
+
 
 bot.run(TOKEN)
