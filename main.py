@@ -275,12 +275,11 @@ async def valorant(ctx):
   ]
   ids.remove(ctx.message.author.id)  #don't send to the same user
   author = ctx.message.author.mention
-  print(author)
   for id in ids:
     user = bot.get_user(id)
     await user.send(
         f"Hola JEJE 👉👈, dice {author} que si quieres jugar valorant :P. Cualquier cosa está en el servidor 🫡"
     )
-
+  await ctx.send("Enviando mensajes!")
 
 bot.run(TOKEN)
