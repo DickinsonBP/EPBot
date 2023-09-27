@@ -273,13 +273,18 @@ async def valorant(ctx):
       649732529858805790, 773121539117678622, 621647138539175936,
       551191398229999629, 589915710583472157
   ]
-  ids.remove(ctx.message.author.id)  #don't send to the same user
+  #ids = [925870780548526132,621672016445046784,551191398229999629]
+  ids.remove(ctx.message.author.id)  
   author = ctx.message.author.mention
   for id in ids:
-    user = bot.get_user(id)
-    await user.send(
-        f"Hola JEJE 👉👈, dice {author} que si quieres jugar valorant :P. Cualquier cosa está en el servidor 🫡"
-    )
+    try:
+      user = bot.get_user(id)
+      print(user.name)
+      await user.send(
+          f"Hola JEJE 👉👈, dice {author} que si quieres jugar valorant :P. Cualquier cosa está en el servidor 🫡"
+      )
+    except Exception as e:
+      print(f"No he podido enviar el mensaje para el id {id}. {e}")
   await ctx.send("Enviando mensajes!")
 
 bot.run(TOKEN)
