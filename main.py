@@ -22,6 +22,7 @@ birthday_photos = [
 welcome = 1019315282138894416
 chateo = 779103315933528075
 bot_always = 1155897749099786330
+valo_gaming = 1018984617451212850
 
 intents = discord.Intents.all()
 intents.message_content = True
@@ -92,6 +93,11 @@ async def ayuda(ctx):
   mbed.add_field(
       name="**!valorant**",
       value="Envia un mensaje por DM a EP para jugar al fokin valorant",
+      inline=False)
+  mbed.add_field(
+      name="**!gaming**",
+      value=
+      "Envia un mensaje por DM a EP para jugar al juego que se diga. Ej: !gaming gta",
       inline=False)
   mbed.add_field(name="**!hola**",
                  value="Sirve para mostrar el saludo del fokin bot",
@@ -314,6 +320,38 @@ async def valorant(ctx):
     except Exception as e:
       print(f"No he podido enviar el mensaje para el id {id}. {e}")
   await ctx.send("Enviando mensajes!")
+
+
+@bot.command()
+async def gaming(ctx, game):
+  if (game):
+    ids = [
+        621672016445046784, 630745427842433044, 490287529833005075,
+        348391595613224962, 287305573572018186, 362634148629970944,
+        649732529858805790, 773121539117678622, 621647138539175936,
+        551191398229999629, 589915710583472157
+    ]
+    ids.remove(ctx.message.author.id)
+    author = ctx.message.author.mention
+    for id in ids:
+      try:
+        user = bot.get_user(id)
+        print(user.name)
+        await user.send(
+            f"Hola JEJE 👉👈, dice {author} que si quieres jugar {game} :P. Cualquier cosa está en el servidor 🫡"
+        )
+      except Exception as e:
+        print(f"No he podido enviar el mensaje para el id {id}. {e}")
+    await ctx.send("Enviando mensajes!")
+  else:
+    await ctx.send("Tienes que decir un juego bobo")
+
+
+@bot.command()
+async def test(ctx):
+  channel = bot.get_channel(valo_gaming)
+  await channel.connect()
+  await channel.send("HOla")
 
 
 bot.run(TOKEN)
