@@ -266,6 +266,23 @@ async def meme_day():
   channel = bot.get_channel(chateo)
   today = date.today()
   if (not check_today_file(today)):
+    if (today.strftime("%a") == "Mon"):
+      file = discord.File('media/ldg.jpg', filename='ldg.jpg')
+      mbed = discord.Embed(title='Lunes de gatos!', color=discord.Color.gold())
+      mbed.set_thumbnail(url="attachment://ldg.jpg")
+      mbed.add_field(name="Hoy es lunes de gatos!",
+                     value="El maldito lunes de gatos!")
+      mbed.set_image(url="attachment://ldg.jpg")
+      await channel.send(file=file, embed=mbed)
+    if (today.strftime("%a") == "Tue"):
+      file = discord.File('media/mdc.jpg', filename='mdc.jpg')
+      mbed = discord.Embed(title='Martes de cumbia!',
+                           color=discord.Color.gold())
+      mbed.set_thumbnail(url="attachment://mdc.jpg")
+      mbed.add_field(name="Hoy es martes de cumbia!",
+                     value="El maldito martes de cumbia!")
+      mbed.set_image(url="attachment://mdc.jpg")
+      await channel.send(file=file, embed=mbed)
     if (today.strftime("%a") == "Thu"):
       file = discord.File('media/jdr.png', filename='jdr.png')
       mbed = discord.Embed(title='Jueves de racismo!',
@@ -275,7 +292,7 @@ async def meme_day():
                      value="El maldito jueves de racismo!")
       mbed.set_image(url="attachment://jdr.png")
       await channel.send(file=file, embed=mbed)
-    elif (today.strftime("%a") == "Fri"):
+    if (today.strftime("%a") == "Fri"):
       file = discord.File('media/vhn.png', filename='vhn.png')
       mbed = discord.Embed(title='Viernes de humor negro!',
                            color=discord.Color.gold())
