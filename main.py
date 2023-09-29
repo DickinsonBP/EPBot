@@ -243,32 +243,51 @@ async def poll(ctx, question, *options: str):
     await message.add_reaction(reactions[i])
 
 
+def check_today_file(day):
+  with open("meme_day.txt", "r") as f:
+    for line in f:
+      pass
+    #get last line
+    last_line = line
+
+  return day.strftime("%d/%m/%Y") == last_line
+
+
+def save_today_file(day):
+  with open("meme_day.txt", 'a') as file:
+    file.write(day.strftime("%d/%m/%Y") + '\n')
+
+
 @tasks.loop(hours=24)
 async def meme_day():
+  global jueves
+  global viernes
   print("Checking meme of the day")
   channel = bot.get_channel(chateo)
   today = date.today()
-  if (today.strftime("%a") == "Thu"):
-    file = discord.File('media/jdr.png', filename='jdr.png')
-    mbed = discord.Embed(title='Jueves de racismo!',
-                         color=discord.Color.gold())
-    mbed.set_thumbnail(url="attachment://jdr.png")
-    mbed.add_field(name="Hoy es jueves de racismo!",
-                   value="El maldito jueves de racismo!")
-    mbed.set_image(url="attachment://jdr.png")
-    await channel.send(file=file, embed=mbed)
-  elif (today.strftime("%a") == "Fri"):
-    file = discord.File('media/vhn.png', filename='vhn.png')
-    mbed = discord.Embed(title='Viernes de humor negro!',
-                         color=discord.Color.gold())
-    mbed.set_thumbnail(url="attachment://vhn.png")
-    mbed.add_field(name="Hoy es viernes de humor negro!",
-                   value="El maldito viernes de humor negro!")
-    mbed.set_image(url="attachment://vhn.png")
+  if (not check_today_file(today)):
+    if (today.strftime("%a") == "Thu"):
+      file = discord.File('media/jdr.png', filename='jdr.png')
+      mbed = discord.Embed(title='Jueves de racismo!',
+                           color=discord.Color.gold())
+      mbed.set_thumbnail(url="attachment://jdr.png")
+      mbed.add_field(name="Hoy es jueves de racismo!",
+                     value="El maldito jueves de racismo!")
+      mbed.set_image(url="attachment://jdr.png")
+      await channel.send(file=file, embed=mbed)
+    elif (today.strftime("%a") == "Fri"):
+      file = discord.File('media/vhn.png', filename='vhn.png')
+      mbed = discord.Embed(title='Viernes de humor negro!',
+                           color=discord.Color.gold())
+      mbed.set_thumbnail(url="attachment://vhn.png")
+      mbed.add_field(name="Hoy es viernes de humor negro!",
+                     value="El maldito viernes de humor negro!")
+      mbed.set_image(url="attachment://vhn.png")
+      await channel.send(file=file, embed=mbed)
+    else:
+      pass
 
-    await channel.send(file=file, embed=mbed)
-  else:
-    pass
+    save_today_file(today)
 
 
 @tasks.loop(hours=24)
@@ -351,7 +370,6 @@ async def gaming(ctx, game):
 async def test(ctx):
   channel = bot.get_channel(valo_gaming)
   await channel.connect()
-  await channel.send("HOla")
 
 
 bot.run(TOKEN)
