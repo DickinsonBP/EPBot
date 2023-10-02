@@ -249,7 +249,7 @@ def check_today_file(day):
       pass
     #get last line
     last_line = line
-
+  last_line = last_line.split()[0]
   return day.strftime("%d/%m/%Y") == last_line
 
 
@@ -260,8 +260,6 @@ def save_today_file(day):
 
 @tasks.loop(hours=24)
 async def meme_day():
-  global jueves
-  global viernes
   print("Checking meme of the day")
   channel = bot.get_channel(chateo)
   today = date.today()
@@ -385,8 +383,11 @@ async def gaming(ctx, game):
 
 @bot.command()
 async def test(ctx):
-  channel = bot.get_channel(valo_gaming)
-  await channel.connect()
+  today = date.today()
+  if (not check_today_file(today)):
+    await ctx.send("Not today yet")
+  else:
+    await ctx.send("There is data")
 
 
 bot.run(TOKEN)
