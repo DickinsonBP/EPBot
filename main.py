@@ -121,12 +121,16 @@ async def ayuda(ctx):
   mbed.add_field(name="**!next_birthdays**",
                  value="Muestra los cumpleaños que vienen",
                  inline=False)
-  mbed.add_field(name="**!get_premier_data**",
-                 value="Muestra toda la información hasta ahora de nuestra clasificación en premier",
-                 inline=False)
-  mbed.add_field(name="**!update_premier**",
-                 value="Actualiza el estado de nuestro equipo en premier. Ej: !update_premier win (añade un win)",
-                 inline=False)
+  mbed.add_field(
+      name="**!get_premier_data**",
+      value=
+      "Muestra toda la información hasta ahora de nuestra clasificación en premier",
+      inline=False)
+  mbed.add_field(
+      name="**!update_premier**",
+      value=
+      "Actualiza el estado de nuestro equipo en premier. Ej: !update_premier win (añade un win)",
+      inline=False)
   mbed.add_field(name="**!talk**",
                  value="(en desarrollo) hablar con un chatbot",
                  inline=False)
@@ -204,7 +208,8 @@ async def next_birthdays(ctx):
   f = open("birthdays.json")
   data = json.load(f)
   data = sorted(data, key=birthday_key)
-  mbed = discord.Embed(title='Los siguientes cumpleaños son:')
+  mbed = discord.Embed(title='Los siguientes cumpleaños son:',
+                       color=discord.Color.gold())
   today = datetime.today()
   for user in data:
     year = 0
@@ -242,7 +247,7 @@ async def poll(ctx, question, *options: str):
   if len(options) == 2 and options[0] == "si" and options[1] == "no":
     reactions = ['👍', '👎']
 
-  mbed = discord.Embed(title=question, color=discord.Color.red())
+  mbed = discord.Embed(title=question, color=discord.Color.gold())
   for i in range(len(options)):
     mbed.add_field(name=options[i], value=reactions[i], inline=True)
   message = await ctx.send(embed=mbed)
@@ -419,13 +424,18 @@ async def update_premier(ctx, status):
 
 @bot.command()
 async def get_premier_data(ctx):
+  file = discord.File('media/Premier.png', filename='Premier.png')
   mbed = discord.Embed(title='PREMIER!',
                        description="Estos son los resultados hasta ahora",
                        color=discord.Color.gold())
+  mbed.set_thumbnail(url="attachment://Premier.png")
   f = open("premier_data.json")
   data = json.load(f)["premier"][0]
   mbed.add_field(name="Partidos jugados hasta ahora",
                  value="%s" % (data["total_matches_played"]),
+                 inline=False)
+  mbed.add_field(name="Partidos que quedan por jugar",
+                 value="%s" % (data["matches_left"]),
                  inline=False)
   mbed.add_field(name="Total de puntos conseguidos (600 para clasificar)",
                  value="%s" % (data["total_points"]),
@@ -443,7 +453,7 @@ async def get_premier_data(ctx):
                  value="%s wins y %s loses" % (wins, loses),
                  inline=False)
 
-  await ctx.send(embed=mbed)
+  await ctx.send(file=file, embed=mbed)
 
 
 @tasks.loop(hours=24)
@@ -452,13 +462,18 @@ async def check_premier():
   channel = bot.get_channel(chateo)
   today = date.today()
   if (not check_today_file(today, "premier_day.txt")):
+    file = discord.File('media/Premier.png', filename='Premier.png')
     mbed = discord.Embed(title='Hoy toca premier!',
                          description="Estos son los resultados hasta ahora",
                          color=discord.Color.gold())
+    mbed.set_thumbnail(url="attachment://Premier.png")
     f = open("premier_data.json")
     data = json.load(f)["premier"][0]
     mbed.add_field(name="Partidos jugados hasta ahora",
                    value="%s" % (data["total_matches_played"]),
+                   inline=False)
+    mbed.add_field(name="Partidos que quedan por jugar",
+                   value="%s" % (data["matches_left"]),
                    inline=False)
     mbed.add_field(name="Total de puntos conseguidos (600 para clasificar)",
                    value="%s" % (data["total_points"]),
@@ -476,9 +491,9 @@ async def check_premier():
                    value="%s wins y %s loses" % (wins, loses),
                    inline=False)
     if (today.strftime("%a") == "Sat"):
-      await channel.send(embed=mbed)
-    if (today.strftime("%a") == "Sun"):
-      await channel.send(embed=mbed)
+      await channel.send(file=file, embed=mbed)
+    if (today.strftime("%a") == "Thu"):
+      await channel.send(file=file, embed=mbed)
 
     save_today_file(today, "premier_day.txt")
 
