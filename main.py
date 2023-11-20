@@ -410,14 +410,18 @@ async def update_premier(ctx, status):
     data["premier"][0]["wins"] = data["premier"][0]["wins"] + 1
     data["premier"][0][
         "total_points"] = data["premier"][0]["total_points"] + 100
+    await ctx.send("Epaaa menudo win xavaleee")
   if (status == "lose"):
     data["premier"][0]["loses"] = data["premier"][0]["loses"] + 1
     data["premier"][0][
         "total_points"] = data["premier"][0]["total_points"] + 25
+    await ctx.send("Mas malos y no naceis")
 
   data["premier"][0][
       "total_matches_played"] = data["premier"][0]["total_matches_played"] + 1
   data["premier"][0]["matches_left"] = data["premier"][0]["matches_left"] - 1
+
+  await get_premier_data(ctx)
   with open("premier_data.json", "w") as jsonFile:
     json.dump(data, jsonFile)
 
