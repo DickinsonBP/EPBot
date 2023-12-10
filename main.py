@@ -421,9 +421,9 @@ async def update_premier(ctx, status):
       "total_matches_played"] = data["premier"][0]["total_matches_played"] + 1
   data["premier"][0]["matches_left"] = data["premier"][0]["matches_left"] - 1
 
-  await get_premier_data(ctx)
   with open("premier_data.json", "w") as jsonFile:
     json.dump(data, jsonFile)
+  #await get_premier_data(ctx)
 
 
 @bot.command()
@@ -453,6 +453,9 @@ async def get_premier_data(ctx):
   wins = (600 - int(data["total_points"])) // 100
   loses = ((600 - int(data["total_points"])) % 100) // 25
 
+  if (wins + loses > int(data["matches_left"])):
+    wins = int(data["matches_left"])
+    loses = 0
   mbed.add_field(name="Partidos para clasificar",
                  value="%s wins y %s loses" % (wins, loses),
                  inline=False)
@@ -490,7 +493,9 @@ async def check_premier():
                    inline=False)
     wins = (600 - int(data["total_points"])) // 100
     loses = ((600 - int(data["total_points"])) % 100) // 25
-
+    if (wins + loses > int(data["matches_left"])):
+      wins = int(data["matches_left"])
+      loses = 0
     mbed.add_field(name="Partidos para clasificar",
                    value="%s wins y %s loses" % (wins, loses),
                    inline=False)
