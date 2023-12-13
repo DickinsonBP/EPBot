@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
 from _bot import keep_alive
@@ -8,9 +9,10 @@ import json
 from datetime import date, datetime
 import random
 
+load_dotenv()
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
-GPT = os.environ['GPT']
+#GPT = os.environ['GPT']
 
 birthday_photos = [
     "media/piolin_cumple.jpeg", "media/piolin_cumple2.jpeg",
@@ -187,7 +189,7 @@ def birthday_key(user):
 
 @bot.command()
 async def add_birthday(ctx, member, birthday):
-  f = open("birthdays.json")
+  f = open("json/birthdays.json")
   data = json.load(f)
   f.close()
 
@@ -197,7 +199,7 @@ async def add_birthday(ctx, member, birthday):
 
   data.append({"userID": member, "birthday": birthday})
 
-  with open("birthdays.json", "w") as json_file:
+  with open("json/birthdays.json", "w") as json_file:
     json.dump(data, json_file)
 
   await ctx.send("Se ha guardado el cumpleaños correctamente!")
@@ -205,7 +207,7 @@ async def add_birthday(ctx, member, birthday):
 
 @bot.command()
 async def next_birthdays(ctx):
-  f = open("birthdays.json")
+  f = open("json/birthdays.json")
   data = json.load(f)
   data = sorted(data, key=birthday_key)
   mbed = discord.Embed(title='Los siguientes cumpleaños son:',
@@ -274,7 +276,7 @@ async def meme_day():
   print("Checking meme of the day")
   channel = bot.get_channel(chateo)
   today = date.today()
-  if (not check_today_file(today, "meme_day.txt")):
+  if (not check_today_file(today, "extra_files/meme_day.txt")):
     if (today.strftime("%a") == "Mon"):
       file = discord.File('media/ldg.jpg', filename='ldg.jpg')
       mbed = discord.Embed(title='Lunes de gatos!', color=discord.Color.gold())
@@ -322,7 +324,7 @@ async def meme_day():
     else:
       pass
 
-    save_today_file(today, "meme_day.txt")
+    save_today_file(today, "extra_files/meme_day.txt")
 
 
 @tasks.loop(hours=24)
@@ -330,7 +332,7 @@ async def check_birthdays():
   print("Checking birthday")
   channel = bot.get_channel(chateo)
   today = date.today()
-  f = open("birthdays.json")
+  f = open("json/birthdays.json")
   data = json.load(f)
   for user in data:
     birthday = datetime.strptime(user["birthday"], "%d/%m/%Y")
@@ -403,7 +405,7 @@ async def gaming(ctx, game):
 
 @bot.command()
 async def update_premier(ctx, status):
-  with open("premier_data.json", "r") as jsonFile:
+  with open("json/premier_data.json", "r") as jsonFile:
     data = json.load(jsonFile)
 
   if (status == "win"):
@@ -421,7 +423,7 @@ async def update_premier(ctx, status):
       "total_matches_played"] = data["premier"][0]["total_matches_played"] + 1
   data["premier"][0]["matches_left"] = data["premier"][0]["matches_left"] - 1
 
-  with open("premier_data.json", "w") as jsonFile:
+  with open("json/premier_data.json", "w") as jsonFile:
     json.dump(data, jsonFile)
   #await get_premier_data(ctx)
 
@@ -433,7 +435,7 @@ async def get_premier_data(ctx):
                        description="Estos son los resultados hasta ahora",
                        color=discord.Color.gold())
   mbed.set_thumbnail(url="attachment://Premier.png")
-  f = open("premier_data.json")
+  f = open("json/premier_data.json")
   data = json.load(f)["premier"][0]
   mbed.add_field(name="Partidos jugados hasta ahora",
                  value="%s" % (data["total_matches_played"]),
@@ -468,13 +470,13 @@ async def check_premier():
   print("Checking premier day")
   channel = bot.get_channel(chateo)
   today = date.today()
-  if (not check_today_file(today, "premier_day.txt")):
+  if (not check_today_file(today, "extra_files/premier_day.txt")):
     file = discord.File('media/Premier.png', filename='Premier.png')
     mbed = discord.Embed(title='Hoy toca premier!',
                          description="Estos son los resultados hasta ahora",
                          color=discord.Color.gold())
     mbed.set_thumbnail(url="attachment://Premier.png")
-    f = open("premier_data.json")
+    f = open("json/premier_data.json")
     data = json.load(f)["premier"][0]
     mbed.add_field(name="Partidos jugados hasta ahora",
                    value="%s" % (data["total_matches_played"]),
@@ -504,7 +506,7 @@ async def check_premier():
     if (today.strftime("%a") == "Thu"):
       await channel.send(file=file, embed=mbed)
 
-    save_today_file(today, "premier_day.txt")
+    save_today_file(today, "extra_files/premier_day.txt")
 
 
 @bot.command()
