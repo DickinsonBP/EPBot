@@ -2,9 +2,7 @@ import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
-from _bot import keep_alive
-import aiohttp
-#import openai
+
 import json
 from datetime import date, datetime
 import random
