@@ -29,7 +29,7 @@ valo_gaming = 1018984617451212850
 intents = discord.Intents.all()
 intents.message_content = True
 
-keep_alive()
+#keep_alive()
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 

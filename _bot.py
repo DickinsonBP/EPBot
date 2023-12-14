@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 import discord
 from discord.ext import commands
@@ -8,6 +9,7 @@ from threading import Thread
 
 from _support_functions import *
 
+load_dotenv()
 token = os.environ['TOKEN']
 
 app = Flask('')
