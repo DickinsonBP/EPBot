@@ -1,1 +1,12 @@
-{"premier": [{"max_points": 600, "matches_left": 2, "total_matches_played": 12, "wins": 2, "loses": 9, "total_points": 425}]}
+{
+    "premier": [
+        {
+            "max_points": 600,
+            "matches_left": 2,
+            "total_matches_played": 12,
+            "wins": 2,
+            "loses": 9,
+            "total_points": 425
+        }
+    ]
+}

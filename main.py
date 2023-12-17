@@ -21,13 +21,11 @@ birthday_photos = [
 #channels id
 welcome = 1019315282138894416
 chateo = 779103315933528075
-bot_always = 1155897749099786330
 valo_gaming = 1018984617451212850
 
 intents = discord.Intents.all()
 intents.message_content = True
 
-#keep_alive()
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -37,8 +35,7 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
-  do_something.start()
-  check_premier.start()
+  #check_premier.start()
 
 
 @bot.event
@@ -86,7 +83,7 @@ async def ayuda(ctx):
   author = ctx.message.author.mention
   mbed = discord.Embed(
       title='Guia de ayuda!',
-      description=f"{author} aqui puedes ver los comandos que puedes usar!")
+      description=f"{author} aqui puedes ver los comandos que puedes usar!",color=discord.Color.gold())
 
   mbed.add_field(name="**!ayuda**",
                  value="Sirve para mostrar esta guia de ayuda",
@@ -130,6 +127,11 @@ async def ayuda(ctx):
       name="**!update_premier**",
       value=
       "Actualiza el estado de nuestro equipo en premier. Ej: !update_premier win (añade un win)",
+      inline=False)
+  mbed.add_field(
+      name="**!restart_premier**",
+      value=
+      "Actualiza el estado de los puntos en premier",
       inline=False)
   mbed.add_field(name="**!talk**",
                  value="(en desarrollo) hablar con un chatbot",
@@ -346,13 +348,6 @@ async def check_birthdays():
       mbed.set_image(url="attachment://image.png")
       await channel.send(file=file, embed=mbed)
 
-
-@tasks.loop(minutes=3)
-async def do_something():
-  channel = bot.get_channel(bot_always)
-  await channel.send("Mensaje para no morir")
-
-
 @bot.command()
 async def valorant(ctx):
   ids = [
@@ -423,8 +418,6 @@ async def update_premier(ctx, status):
 
   with open("json/premier_data.json", "w") as jsonFile:
     json.dump(data, jsonFile)
-  #await get_premier_data(ctx)
-
 
 @bot.command()
 async def get_premier_data(ctx):
@@ -506,6 +499,22 @@ async def check_premier():
 
     save_today_file(today, "extra_files/premier_day.txt")
 
+@bot.command()
+async def restart_premier(ctx):
+  with open("json/premier_data.json", "r") as jsonFile:
+    data = json.load(jsonFile)
+
+  data["premier"][0]["wins"] = 0
+  data["premier"][0]["total_points"] = 0
+  data["premier"][0]["loses"] = 0
+
+  data["premier"][0]["total_matches_played"] = 0
+  data["premier"][0]["matches_left"] = 14
+
+  with open("json/premier_data.json", "w") as jsonFile:
+    json.dump(data, jsonFile)
+  
+  await ctx.send("Archivo actualizado!")
 
 @bot.command()
 async def test(ctx):
