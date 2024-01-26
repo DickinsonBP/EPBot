@@ -35,7 +35,7 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
-  #check_premier.start()
+  check_premier.start()
 
 
 @bot.event
