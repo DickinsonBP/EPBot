@@ -321,6 +321,15 @@ async def meme_day():
                      value="El maldito viernes de humor negro!")
       mbed.set_image(url="attachment://vhn.png")
       await channel.send(file=file, embed=mbed)
+    if (today.strftime("%a") == "Sun"):
+      file = discord.File('media/dds.jpg', filename='dds.jpg')
+      mbed = discord.Embed(title='Viernes de humor negro!',
+                           color=discord.Color.gold())
+      mbed.set_thumbnail(url="attachment://dds.jpg")
+      mbed.add_field(name="Hoy es domingo del señor!",
+                     value="El maldito domingo del señor!")
+      mbed.set_image(url="attachment://dds.jpg")
+      await channel.send(file=file, embed=mbed)
     else:
       pass
 
