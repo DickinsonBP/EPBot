@@ -323,7 +323,7 @@ async def meme_day():
       await channel.send(file=file, embed=mbed)
     if (today.strftime("%a") == "Sun"):
       file = discord.File('media/dds.jpg', filename='dds.jpg')
-      mbed = discord.Embed(title='Viernes de humor negro!',
+      mbed = discord.Embed(title='Domingo del señor!',
                            color=discord.Color.gold())
       mbed.set_thumbnail(url="attachment://dds.jpg")
       mbed.add_field(name="Hoy es domingo del señor!",
