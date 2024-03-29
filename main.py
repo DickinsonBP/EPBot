@@ -35,7 +35,7 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
-  check_premier.start()
+  #check_premier.start()
 
 
 @bot.event
@@ -218,7 +218,7 @@ async def next_birthdays(ctx):
     username = bot.get_user(int(user["userID"])).mention
 
     birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
-    if (birthday1.month >= today.month):
+    if (birthday1.month > today.month):
       year = today.year
       birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
     else:
@@ -228,8 +228,8 @@ async def next_birthdays(ctx):
     birthday = datetime.strptime(birthday, "%d/%m/%Y")
 
     mbed.add_field(name="",
-                   value="%s Quedan %s días y **cumple %s añacos LOL**" %
-                   (username, (birthday - today).days, year - birthday1.year),
+                   value="%s Cumple el %s/%s/%s, quedan %s días y **cumple %s añacos**" %
+                   (username, birthday.day, birthday.month, birthday.year, (birthday - today).days, year - birthday1.year),
                    inline=False)
 
   await ctx.send(embed=mbed)
