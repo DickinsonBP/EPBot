@@ -2,14 +2,16 @@ import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
+import requests
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import random
 
 load_dotenv()
 TOKEN = os.environ['TOKEN']
 UNSPLASH = os.environ['UNSPLASH']
+MOVIES_TOKEN = os.environ['MOVIES_TOKEN']
 #GPT = os.environ['GPT']
 
 birthday_photos = [
@@ -35,8 +37,10 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
+  today = date.today()  
+  if (today.strftime("%a") == "Sat"):
+    weekly_movies.start()
   #check_premier.start()
-
 
 @bot.event
 async def on_member_join(member):
@@ -146,7 +150,6 @@ async def ayuda(ctx):
 @bot.command()
 async def twitch(ctx):
   await ctx.send("""Estos son los canales de twitch de mis amigos!
-      - Alis: https://www.twitch.tv/alis_trh
       - Julio: https://www.twitch.tv/jeidad_
     """)
 
@@ -213,27 +216,32 @@ async def next_birthdays(ctx):
   mbed = discord.Embed(title='Los siguientes cumpleaños son:',
                        color=discord.Color.gold())
   today = datetime.today()
-  for user in data:
-    year = 0
-    username = bot.get_user(int(user["userID"])).mention
+  try:
+    for user in data:
+      year = 0
+      username = bot.get_user(int(user["userID"]))
+      if username:
+        username = username.mention
 
-    birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
-    if (birthday1.month > today.month):
-      year = today.year
-      birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
-    else:
-      year = today.year + 1
-      birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year + 1)
+        birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
+        if (birthday1.month > today.month):
+          year = today.year
+          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
+        else:
+          year = today.year + 1
+          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year + 1)
 
-    birthday = datetime.strptime(birthday, "%d/%m/%Y")
+        birthday = datetime.strptime(birthday, "%d/%m/%Y")
 
-    mbed.add_field(name="",
-                   value="%s Cumple el %s/%s/%s, quedan %s días y **cumple %s añacos**" %
-                   (username, birthday.day, birthday.month, birthday.year, (birthday - today).days, year - birthday1.year),
-                   inline=False)
+        mbed.add_field(name="",
+                      value="%s Cumple el %s/%s/%s, quedan %s días y **cumple %s añacos**" %
+                      (username, birthday.day, birthday.month, birthday.year, (birthday - today).days, year - birthday1.year),
+                      inline=False)
 
-  await ctx.send(embed=mbed)
-
+    await ctx.send(embed=mbed)
+  except Exception as e:
+    message = f"Error al ejecutar next_birthdays: {e}"
+    await ctx.send(message)
 
 @bot.command()
 async def poll(ctx, question, *options: str):
@@ -529,5 +537,155 @@ async def restart_premier(ctx):
 async def test(ctx):
   pass
 
+
+def get_weekly_movies():
+    """
+    Función para obtener las películas estrenadas en la última semana.
+    """
+    url = "https://api.themoviedb.org/3/movie/now_playing?language=es-SP&page=1&region=ES"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {MOVIES_TOKEN}"
+    }
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        results = data["results"]
+
+        # Filtrar películas estrenadas en la última semana
+        weekly_movies = []
+        today = datetime.now()
+        one_week_ago = today - timedelta(days=7)
+
+        for movie in results:
+            release_date = datetime.strptime(movie["release_date"], "%Y-%m-%d")
+            if release_date >= one_week_ago and release_date <= today:
+                weekly_movies.append(movie)
+
+        return weekly_movies
+    else:
+        print(f"Error fetching data from TMDb: {response.status_code}")
+        return []
+
+@tasks.loop(hours=24)
+async def weekly_movies():
+  print("Cheking weekly movies")
+  channel = bot.get_channel(chateo)
+  movies = get_weekly_movies()
+
+  if not movies:
+      await channel.send("No se encontraron estrenos de películas para esta semana.")
+      return
+
+  embeds = []  # Lista para almacenar múltiples embeds si es necesario
+  embed = discord.Embed(
+      title="Estrenos de Películas de la Semana",
+      description="Aquí están los estrenos de películas de la semana en los cines.",
+      color=discord.Color.gold()
+  )
+
+  for movie in movies:
+      title = movie["title"]
+      original_title = movie["original_title"]
+      release_date = movie["release_date"]
+      overview = movie["overview"]
+      rating = movie["vote_average"]
+      poster_path = movie["poster_path"]
+      poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
+
+      # Truncar el resumen si es demasiado largo
+      if len(overview) > 100:
+          overview = overview[:97] + "..."
+
+      # Verificar si agregar esta película excedería el límite de caracteres del embed
+      if len(embed) + len(f"{title} (Rating: {rating})") + len(f"Fecha de estreno: {release_date}\n{overview[:100]}...") > 6000:
+          embeds.append(embed)  # Agregar el embed actual a la lista
+          embed = discord.Embed(  # Crear un nuevo embed
+              title="Estrenos de Películas de la Semana (continuación)",
+              description="Continúa la lista de estrenos de la semana.",
+              color=discord.Color.blue()
+          )
+      if original_title == title:
+        embed.add_field(
+            name=f"{title} (Puntuación: {rating})",
+            value=f"Fecha de estreno: {release_date}\n{overview}",
+            inline=False
+        )
+      else:
+        embed.add_field(
+            name=f"{title} (Titulo original: {original_title}) (Puntuación: {rating})",
+            value=f"Fecha de estreno: {release_date}\n{overview}",
+            inline=False
+        )
+
+      if poster_url:
+          embed.set_thumbnail(url=poster_url)
+
+  embeds.append(embed)  # Añadir el último embed a la lista
+
+  # Enviar todos los embeds
+  for embed in embeds:
+      await channel.send(embed=embed)
+      
+@bot.command()
+async def movies(ctx):
+  print("Cheking weekly movies")
+  movies = get_weekly_movies()
+
+  if not movies:
+      await ctx.send("No se encontraron estrenos de películas para esta semana.")
+      return
+
+  embeds = []  # Lista para almacenar múltiples embeds si es necesario
+  embed = discord.Embed(
+      title="Estrenos de Películas de la Semana",
+      description="Aquí están los estrenos de películas de la semana en los cines.",
+      color=discord.Color.gold()
+  )
+
+  for movie in movies:
+      title = movie["title"]
+      original_title = movie["original_title"]
+      release_date = movie["release_date"]
+      overview = movie["overview"]
+      rating = movie["vote_average"]
+      poster_path = movie["poster_path"]
+      poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
+
+      # Truncar el resumen si es demasiado largo
+      if len(overview) > 100:
+          overview = overview[:97] + "..."
+
+      # Verificar si agregar esta película excedería el límite de caracteres del embed
+      if len(embed) + len(f"{title} (Rating: {rating})") + len(f"Fecha de estreno: {release_date}\n{overview[:100]}...") > 6000:
+          embeds.append(embed)  # Agregar el embed actual a la lista
+          embed = discord.Embed(  # Crear un nuevo embed
+              title="Estrenos de Películas de la Semana (continuación)",
+              description="Continúa la lista de estrenos de la semana.",
+              color=discord.Color.blue()
+          )
+      if original_title == title:
+        embed.add_field(
+            name=f"{title} (Puntuación: {rating})",
+            value=f"Fecha de estreno: {release_date}\n{overview}",
+            inline=False
+        )
+      else:
+        embed.add_field(
+            name=f"{title} (Titulo original: {original_title}) (Puntuación: {rating})",
+            value=f"Fecha de estreno: {release_date}\n{overview}",
+            inline=False
+        )
+
+      if poster_url:
+          embed.set_thumbnail(url=poster_url)
+
+  embeds.append(embed)  # Añadir el último embed a la lista
+
+  # Enviar todos los embeds
+  for embed in embeds:
+      await ctx.send(embed=embed)
 
 bot.run(TOKEN)
