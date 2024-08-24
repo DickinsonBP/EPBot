@@ -124,6 +124,11 @@ async def ayuda(ctx):
       value=
       "Añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (mm/dd/YYYY)",
       inline=False)
+  mbed.add_field(
+      name="**!delete_birthday**",
+      value=
+      "Añade el cumpleaños de un miembro. Ej: !delete_birthday @user",
+      inline=False)
   mbed.add_field(name="**!next_birthdays**",
                  value="Muestra los cumpleaños que vienen",
                  inline=False)
@@ -181,25 +186,30 @@ async def image(ctx, *, search):
     await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search)
 
 
-def birthday_key(user):
-  today = date.today()
-  current_day = int(today.strftime("%d"))
-  current_month = int(today.strftime("%m"))
-  day = int(user["birthday"].split("/")[0])
-  month = int(user["birthday"].split("/")[1])
+def calculate_next_birthday(birthday_str):
+    today = datetime.today()
+    birthday_date = datetime.strptime(birthday_str, "%d/%m/%Y")
+    birthday_this_year = birthday_date.replace(year=today.year)
 
-  if current_month <= month:
-    month = month - current_month
-  else:
-    month = 12 - (current_month - month)
+    # Si el cumpleaños ya pasó este año, calcular para el próximo año
+    if today > birthday_this_year:
+        birthday_this_year = birthday_this_year.replace(year=today.year + 1)
 
-  if current_day <= day:
-    day = day - current_day
-  else:
-    day = 31 - (current_day - day)
+    return birthday_this_year
 
-  return month, day
+def sort_birthdays(data):
 
+    for user in data:
+        user['next_birthday'] = calculate_next_birthday(user['birthday'])
+        
+     # Ordenar por el campo 'next_birthday'
+    sorted_data = sorted(data, key=lambda x: x['next_birthday'])
+
+    # Eliminar el campo 'next_birthday' después de ordenar
+    for user in sorted_data:
+        del user['next_birthday']
+
+    return sorted_data
 
 @bot.command()
 async def add_birthday(ctx, member, birthday):
@@ -222,10 +232,38 @@ async def add_birthday(ctx, member, birthday):
     await ctx.send(f"🔥Error al ejecutar comando !add_birthdays: {e}")
 
 @bot.command()
+async def delete_birthday(ctx, member):
+  try:
+      # Leer los datos existentes desde el archivo JSON
+      with open("json/birthdays.json") as f:
+          data = json.load(f)
+
+      # Limpiar el formato del miembro
+      member_id = member.replace('<', '').replace('>', '').replace('@', '')
+
+      # Filtrar los datos para eliminar el cumpleaños del miembro especificado
+      new_data = [user for user in data if user['userID'] != member_id]
+
+      # Si no se encontró el usuario, enviar un mensaje de error
+      if len(new_data) == len(data):
+          await ctx.send("No se encontró el cumpleaños del usuario.")
+          return
+
+      # Guardar los datos actualizados en el archivo JSON
+      with open("json/birthdays.json", "w") as json_file:
+          json.dump(new_data, json_file)
+
+      await ctx.send("Se ha eliminado el cumpleaños correctamente!")
+
+  except Exception as e:
+      await ctx.send(f"🔥Error al ejecutar comando !delete_birthday: {e}")
+
+@bot.command()
 async def next_birthdays(ctx):
   f = open("json/birthdays.json")
   data = json.load(f)
-  data = sorted(data, key=birthday_key)
+  # print(data)
+  data = sort_birthdays(data)
   mbed = discord.Embed(title='Los siguientes cumpleaños son:',
                        color=discord.Color.gold())
   today = datetime.today()
@@ -237,12 +275,14 @@ async def next_birthdays(ctx):
         username = username.mention
 
         birthday1 = datetime.strptime(user["birthday"], "%d/%m/%Y")
-        if (birthday1.month > today.month):
+        # birthday1 = datetime(today.year, birthday1.month, birthday1.day)
+        if (birthday1.month > today.month) and (birthday1.day > today.day):
+        # if (birthday1 > today):
           year = today.year
-          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year)
+          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, year)
         else:
           year = today.year + 1
-          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, today.year + 1)
+          birthday = "%s/%s/%s" % (birthday1.day, birthday1.month, year)
 
         birthday = datetime.strptime(birthday, "%d/%m/%Y")
 
@@ -388,7 +428,7 @@ async def valorant(ctx):
   ids = [
       621672016445046784, 630745427842433044, 490287529833005075,
       348391595613224962, 287305573572018186, 362634148629970944,
-      649732529858805790, 773121539117678622, 621647138539175936,
+      773121539117678622, 621647138539175936,
       551191398229999629, 589915710583472157
   ]
   #ids = [925870780548526132,621672016445046784,551191398229999629]
@@ -412,7 +452,7 @@ async def gaming(ctx, game):
     ids = [
         621672016445046784, 630745427842433044, 490287529833005075,
         348391595613224962, 287305573572018186, 362634148629970944,
-        649732529858805790, 773121539117678622, 621647138539175936,
+        773121539117678622, 621647138539175936,
         551191398229999629, 589915710583472157
     ]
     ids.remove(ctx.message.author.id)
