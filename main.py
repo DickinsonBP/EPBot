@@ -156,18 +156,24 @@ async def twitch(ctx):
 
 @bot.command()
 async def image(ctx, *, search):
-  search_formtted = search.replace(' ', '_')
+  # search_formtted = search.replace(' ', '_')
+  search_formtted = requests.utils.quote(search)
   url = f'https://api.unsplash.com/photos/random/?query={search_formtted}&orientation=squarish&content_filter=high&client_id={UNSPLASH}'
   try:
-    async with aiohttp.ClientSession() as session:
-      request = await session.get(url)
-      json_data = await request.json()
-    mbed = discord.Embed(title='Aqui esta tu imágen de **%s**!' % search)
-    mbed.set_image(url=json_data['urls']['regular'])
-    await ctx.send(embed=mbed)
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+
+            if 'urls' in data:
+                mbed = discord.Embed(title=f'Aquí está tu imagen de **{search}**!',color=discord.Color.gold())
+                mbed.set_image(url=data['urls']['regular'])
+                await ctx.send(embed=mbed)
+            else:
+                await ctx.send("No se ha encontrado ninguna imagen que coincida con tu búsqueda.")
+        else:
+            await ctx.send("🔥 No se ha podido encontrar la imagen.")
   except Exception as e:
-    await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search
-                   )
+    await ctx.send("Error! No se ha podido encontrar la imagen **%s**" % search)
 
 
 def birthday_key(user):
@@ -192,21 +198,23 @@ def birthday_key(user):
 
 @bot.command()
 async def add_birthday(ctx, member, birthday):
-  f = open("json/birthdays.json")
-  data = json.load(f)
-  f.close()
+  try:
+    f = open("json/birthdays.json")
+    data = json.load(f)
+    f.close()
 
-  member = member.replace('<', '')
-  member = member.replace('>', '')
-  member = member.replace('@', '')
+    member = member.replace('<', '')
+    member = member.replace('>', '')
+    member = member.replace('@', '')
 
-  data.append({"userID": member, "birthday": birthday})
+    data.append({"userID": member, "birthday": birthday})
 
-  with open("json/birthdays.json", "w") as json_file:
-    json.dump(data, json_file)
+    with open("json/birthdays.json", "w") as json_file:
+      json.dump(data, json_file)
 
-  await ctx.send("Se ha guardado el cumpleaños correctamente!")
-
+    await ctx.send("Se ha guardado el cumpleaños correctamente!")
+  except Exception as e:
+    await ctx.send(f"🔥Error al ejecutar comando !add_birthdays: {e}")
 
 @bot.command()
 async def next_birthdays(ctx):
@@ -240,8 +248,7 @@ async def next_birthdays(ctx):
 
     await ctx.send(embed=mbed)
   except Exception as e:
-    message = f"Error al ejecutar next_birthdays: {e}"
-    await ctx.send(message)
+    await ctx.send(f"🔥Error al ejecutar comando !next_birthdays: {e}")
 
 @bot.command()
 async def poll(ctx, question, *options: str):
@@ -281,89 +288,95 @@ def save_today_file(day, file):
 
 @tasks.loop(hours=24)
 async def meme_day():
-  print("Checking meme of the day")
   channel = bot.get_channel(chateo)
-  today = date.today()
-  if (not check_today_file(today, "extra_files/meme_day.txt")):
-    if (today.strftime("%a") == "Mon"):
-      file = discord.File('media/ldg.jpg', filename='ldg.jpg')
-      mbed = discord.Embed(title='Lunes de gatos!', color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://ldg.jpg")
-      mbed.add_field(name="Hoy es lunes de gatos!",
-                     value="El maldito lunes de gatos!")
-      mbed.set_image(url="attachment://ldg.jpg")
-      await channel.send(file=file, embed=mbed)
-    if (today.strftime("%a") == "Tue"):
-      file = discord.File('media/mdc.jpg', filename='mdc.jpg')
-      mbed = discord.Embed(title='Martes de cumbia!',
-                           color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://mdc.jpg")
-      mbed.add_field(name="Hoy es martes de cumbia!",
-                     value="El maldito martes de cumbia!")
-      mbed.set_image(url="attachment://mdc.jpg")
-      await channel.send(file=file, embed=mbed)
-    if (today.strftime("%a") == "Wed"):
-      file = discord.File('media/mdm.jpg', filename='mdm.jpg')
-      mbed = discord.Embed(title='Miercoles de takos!',
-                           color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://mdm.jpg")
-      mbed.add_field(name="Hoy es miercoles de takos!",
-                     value="El maldito miercoles de takos!")
-      mbed.set_image(url="attachment://mdm.jpg")
-      await channel.send(file=file, embed=mbed)
-    if (today.strftime("%a") == "Thu"):
-      file = discord.File('media/jdr.png', filename='jdr.png')
-      mbed = discord.Embed(title='Jueves de racismo!',
-                           color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://jdr.png")
-      mbed.add_field(name="Hoy es jueves de racismo!",
-                     value="El maldito jueves de racismo!")
-      mbed.set_image(url="attachment://jdr.png")
-      await channel.send(file=file, embed=mbed)
-    if (today.strftime("%a") == "Fri"):
-      file = discord.File('media/vhn.png', filename='vhn.png')
-      mbed = discord.Embed(title='Viernes de humor negro!',
-                           color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://vhn.png")
-      mbed.add_field(name="Hoy es viernes de humor negro!",
-                     value="El maldito viernes de humor negro!")
-      mbed.set_image(url="attachment://vhn.png")
-      await channel.send(file=file, embed=mbed)
-    if (today.strftime("%a") == "Sun"):
-      file = discord.File('media/dds.jpg', filename='dds.jpg')
-      mbed = discord.Embed(title='Domingo del señor!',
-                           color=discord.Color.gold())
-      mbed.set_thumbnail(url="attachment://dds.jpg")
-      mbed.add_field(name="Hoy es domingo del señor!",
-                     value="El maldito domingo del señor!")
-      mbed.set_image(url="attachment://dds.jpg")
-      await channel.send(file=file, embed=mbed)
-    else:
-      pass
+  try:
+    print("Checking meme of the day")
+    today = date.today()
+    if (not check_today_file(today, "extra_files/meme_day.txt")):
+      if (today.strftime("%a") == "Mon"):
+        file = discord.File('media/ldg.jpg', filename='ldg.jpg')
+        mbed = discord.Embed(title='Lunes de gatos!', color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://ldg.jpg")
+        mbed.add_field(name="Hoy es lunes de gatos!",
+                      value="El maldito lunes de gatos!")
+        mbed.set_image(url="attachment://ldg.jpg")
+        await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Tue"):
+        file = discord.File('media/mdc.jpg', filename='mdc.jpg')
+        mbed = discord.Embed(title='Martes de cumbia!',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://mdc.jpg")
+        mbed.add_field(name="Hoy es martes de cumbia!",
+                      value="El maldito martes de cumbia!")
+        mbed.set_image(url="attachment://mdc.jpg")
+        await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Wed"):
+        file = discord.File('media/mdm.jpg', filename='mdm.jpg')
+        mbed = discord.Embed(title='Miercoles de takos!',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://mdm.jpg")
+        mbed.add_field(name="Hoy es miercoles de takos!",
+                      value="El maldito miercoles de takos!")
+        mbed.set_image(url="attachment://mdm.jpg")
+        await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Thu"):
+        file = discord.File('media/jdr.png', filename='jdr.png')
+        mbed = discord.Embed(title='Jueves de racismo!',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://jdr.png")
+        mbed.add_field(name="Hoy es jueves de racismo!",
+                      value="El maldito jueves de racismo!")
+        mbed.set_image(url="attachment://jdr.png")
+        await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Fri"):
+        file = discord.File('media/vhn.png', filename='vhn.png')
+        mbed = discord.Embed(title='Viernes de humor negro!',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://vhn.png")
+        mbed.add_field(name="Hoy es viernes de humor negro!",
+                      value="El maldito viernes de humor negro!")
+        mbed.set_image(url="attachment://vhn.png")
+        await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Sun"):
+        file = discord.File('media/dds.jpg', filename='dds.jpg')
+        mbed = discord.Embed(title='Domingo del señor!',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://dds.jpg")
+        mbed.add_field(name="Hoy es domingo del señor!",
+                      value="El maldito domingo del señor!")
+        mbed.set_image(url="attachment://dds.jpg")
+        await channel.send(file=file, embed=mbed)
+      else:
+        pass
 
-    save_today_file(today, "extra_files/meme_day.txt")
+      save_today_file(today, "extra_files/meme_day.txt")
+  except Exception as e:
+    await channel.send(f"🔥Error al ejecutar comando !check_meme_day: {e}")
 
 
 @tasks.loop(hours=24)
 async def check_birthdays():
-  print("Checking birthday")
   channel = bot.get_channel(chateo)
-  today = date.today()
-  f = open("json/birthdays.json")
-  data = json.load(f)
-  for user in data:
-    birthday = datetime.strptime(user["birthday"], "%d/%m/%Y")
-    if (birthday.day == today.day and birthday.month == today.month):
-      username = bot.get_user(int(user["userID"])).mention
-      file = discord.File(random.choice(birthday_photos), filename='image.png')
+  try:
+    print("Checking birthday")
+    today = date.today()
+    f = open("json/birthdays.json")
+    data = json.load(f)
+    for user in data:
+      birthday = datetime.strptime(user["birthday"], "%d/%m/%Y")
+      if (birthday.day == today.day and birthday.month == today.month):
+        username = bot.get_user(int(user["userID"])).mention
+        file = discord.File(random.choice(birthday_photos), filename='image.png')
 
-      mbed = discord.Embed(title='Cumpleaños!', color=discord.Color.gold())
-      mbed.add_field(
-          name="",
-          value="Hoy es el cumpleaños de %s y esta cumpliendo **%s** añoooos!"
-          % (username, today.year - birthday.year))
-      mbed.set_image(url="attachment://image.png")
-      await channel.send(file=file, embed=mbed)
+        mbed = discord.Embed(title='Cumpleaños!', color=discord.Color.gold())
+        mbed.add_field(
+            name="",
+            value="Hoy es el cumpleaños de %s y esta cumpliendo **%s** añoooos!"
+            % (username, today.year - birthday.year))
+        mbed.set_image(url="attachment://image.png")
+        await channel.send(file=file, embed=mbed)
+  except Exception as e:
+    await channel.send(f"🔥Error al ejecutar comando !check_birthdays: {e}")
 
 @bot.command()
 async def valorant(ctx):
@@ -569,16 +582,8 @@ def get_weekly_movies():
         print(f"Error fetching data from TMDb: {response.status_code}")
         return []
 
-@tasks.loop(hours=24)
-async def weekly_movies():
-  print("Cheking weekly movies")
-  channel = bot.get_channel(chateo)
+def generate_movies_embeded():
   movies = get_weekly_movies()
-
-  if not movies:
-      await channel.send("No se encontraron estrenos de películas para esta semana.")
-      return
-
   embeds = []  # Lista para almacenar múltiples embeds si es necesario
   embed = discord.Embed(
       title="Estrenos de Películas de la Semana",
@@ -623,69 +628,39 @@ async def weekly_movies():
       if poster_url:
           embed.set_thumbnail(url=poster_url)
 
-  embeds.append(embed)  # Añadir el último embed a la lista
+  embeds.append(embed)
+  return embeds
 
-  # Enviar todos los embeds
-  for embed in embeds:
-      await channel.send(embed=embed)
+@tasks.loop(hours=24)
+async def weekly_movies():
+  channel = bot.get_channel(chateo)
+  try:
+    print("Cheking weekly movies")
+    movies = generate_movies_embeded()
+
+    if not movies:
+        await channel.send("No se encontraron estrenos de películas para esta semana.")
+        return
+
+    # Enviar todos los embeds
+    for embed in movies:
+        await channel.send(embed=embed)
+  except Exception as e:
+    await channel.send(f"🔥Error al ejecutar comando !weekly_movies: {e}")
       
 @bot.command()
 async def movies(ctx):
-  print("Cheking weekly movies")
-  movies = get_weekly_movies()
+  try:
+    movies = generate_movies_embeded()
 
-  if not movies:
-      await ctx.send("No se encontraron estrenos de películas para esta semana.")
-      return
+    if not movies:
+        await ctx.send("No se encontraron estrenos de películas para esta semana.")
+        return
 
-  embeds = []  # Lista para almacenar múltiples embeds si es necesario
-  embed = discord.Embed(
-      title="Estrenos de Películas de la Semana",
-      description="Aquí están los estrenos de películas de la semana en los cines.",
-      color=discord.Color.gold()
-  )
-
-  for movie in movies:
-      title = movie["title"]
-      original_title = movie["original_title"]
-      release_date = movie["release_date"]
-      overview = movie["overview"]
-      rating = movie["vote_average"]
-      poster_path = movie["poster_path"]
-      poster_url = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
-
-      # Truncar el resumen si es demasiado largo
-      if len(overview) > 100:
-          overview = overview[:97] + "..."
-
-      # Verificar si agregar esta película excedería el límite de caracteres del embed
-      if len(embed) + len(f"{title} (Rating: {rating})") + len(f"Fecha de estreno: {release_date}\n{overview[:100]}...") > 6000:
-          embeds.append(embed)  # Agregar el embed actual a la lista
-          embed = discord.Embed(  # Crear un nuevo embed
-              title="Estrenos de Películas de la Semana (continuación)",
-              description="Continúa la lista de estrenos de la semana.",
-              color=discord.Color.blue()
-          )
-      if original_title == title:
-        embed.add_field(
-            name=f"{title} (Puntuación: {rating})",
-            value=f"Fecha de estreno: {release_date}\n{overview}",
-            inline=False
-        )
-      else:
-        embed.add_field(
-            name=f"{title} (Titulo original: {original_title}) (Puntuación: {rating})",
-            value=f"Fecha de estreno: {release_date}\n{overview}",
-            inline=False
-        )
-
-      if poster_url:
-          embed.set_thumbnail(url=poster_url)
-
-  embeds.append(embed)  # Añadir el último embed a la lista
-
-  # Enviar todos los embeds
-  for embed in embeds:
-      await ctx.send(embed=embed)
+    # Enviar todos los embeds
+    for embed in movies:
+        await ctx.send(embed=embed)
+  except Exception as e:
+    await ctx.send(f"🔥Error al ejecutar comando !movies: {e}")
 
 bot.run(TOKEN)
