@@ -101,6 +101,11 @@ async def ayuda(ctx):
       value=
       "Envia un mensaje por DM a EP para jugar al juego que se diga. Ej: !gaming gta",
       inline=False)
+  mbed.add_field(
+      name="**!movies**",
+      value=
+      "Muestra las peliculas de estreno de la semana actual. Ej: !movies",
+      inline=False)
   mbed.add_field(name="**!hola**",
                  value="Sirve para mostrar el saludo del fokin bot",
                  inline=False)
@@ -112,7 +117,7 @@ async def ayuda(ctx):
                  value="Busca una foto pasada por parámetro. Ej: !image cat",
                  inline=False)
   mbed.add_field(name="**!poll**",
-                 value="Genera una encuesta. Ej: !poll 'Encuesta' si no",
+                 value='Genera una encuesta. Ej: !poll "Encuesta" si no. Tener en cuenta que hay que poner doble comillas ""!',
                  inline=False)
   mbed.add_field(
       name="**!add_birthday**",
