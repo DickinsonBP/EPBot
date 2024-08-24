@@ -38,7 +38,7 @@ async def on_ready():
   meme_day.start()
   check_birthdays.start()
   today = date.today()  
-  if (today.strftime("%a") == "Sat"):
+  if (today.strftime("%a") == "Mon"):
     weekly_movies.start()
   #check_premier.start()
 
