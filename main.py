@@ -37,9 +37,7 @@ async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
   check_birthdays.start()
-  today = date.today()  
-  if (today.strftime("%a") == "Mon"):
-    weekly_movies.start()
+  weekly_movies.start()
   #check_premier.start()
 
 @bot.event
@@ -678,20 +676,22 @@ def generate_movies_embeded():
 
 @tasks.loop(hours=24)
 async def weekly_movies():
-  channel = bot.get_channel(chateo)
-  try:
-    print("Cheking weekly movies")
-    movies = generate_movies_embeded()
+  today = date.today()  
+  if (today.strftime("%a") == "Mon"):
+    channel = bot.get_channel(chateo)
+    try:
+      print("Cheking weekly movies")
+      movies = generate_movies_embeded()
 
-    if not movies:
-        await channel.send("No se encontraron estrenos de películas para esta semana.")
-        return
+      if not movies:
+          await channel.send("No se encontraron estrenos de películas para esta semana.")
+          return
 
-    # Enviar todos los embeds
-    for embed in movies:
-        await channel.send(embed=embed)
-  except Exception as e:
-    await channel.send(f"🔥Error al ejecutar comando !weekly_movies: {e}")
+      # Enviar todos los embeds
+      for embed in movies:
+          await channel.send(embed=embed)
+    except Exception as e:
+      await channel.send(f"🔥Error al ejecutar comando !weekly_movies: {e}")
       
 @bot.command()
 async def movies(ctx):
