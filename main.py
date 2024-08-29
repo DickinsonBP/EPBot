@@ -708,4 +708,48 @@ async def movies(ctx):
   except Exception as e:
     await ctx.send(f"🔥Error al ejecutar comando !movies: {e}")
 
+
+@bot.command()
+async def ask_bot(ctx, *, user_message: str):
+  bot = commands.Bot(command_prefix="!")
+
+  url = "http://localhost:8080/v1/chat/completions"
+  headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer no-key"
+  }
+  
+  data = {
+        "model": "LLaMA_CPP",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are LLAMAfile, an AI assistant. Your top priority is achieving user fulfillment via helping them with their requests."
+            },
+            {
+                "role": "user",
+                "content": user_message
+            }
+        ]
+    }
+  
+  try:
+    ctx.send("Por favor dame tiempo toy xikito 👉👈")
+    # Hacer la solicitud POST
+    response = requests.post(url, headers=headers, json=data)
+
+    # Verificar si la solicitud fue exitosa
+    if response.status_code == 200:
+        # Parsear la respuesta JSON y formatearla con indentación
+        formatted_response = json.dumps(response.json(), indent=2)
+        # Enviar la respuesta formateada al canal
+        await ctx.send(f"Respuesta de LLaMA:\n```json\n{formatted_response}\n```")
+    else:
+        await ctx.send(f"Error: {response.status_code} - {response.text}")
+
+  except Exception as e:
+    # Manejo de excepciones generales
+    await ctx.send(f"Error al conectarse al servidor LLaMA: {str(e)}")
+
+
 bot.run(TOKEN)
