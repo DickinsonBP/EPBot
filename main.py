@@ -120,7 +120,7 @@ async def ayuda(ctx):
   mbed.add_field(
       name="**!add_birthday**",
       value=
-      "Añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (mm/dd/YYYY)",
+      "Añade el cumpleaños de un miembro. Ej: !add_birthday @user fecha_nacimiento (dd/mm/YYYY)",
       inline=False)
   mbed.add_field(
       name="**!delete_birthday**",
