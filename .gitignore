@@ -2,3 +2,5 @@
 *.txt
 .env
 .venv
+json/
+extra_files/
