@@ -29,7 +29,7 @@ intents = discord.Intents.all()
 intents.message_content = True
 
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 
 
 @bot.event
@@ -78,7 +78,11 @@ async def hola(ctx):
   await ctx.send(
       """Holaaa!!! Soy el fokin EPBot y he sido creado para teneros aqui a ralla. Mis creadores han sido nada mas y nada menos que **%s, %s y %s**, así que hay que respetarlos sinó os cae shit. Para saber que comandos se pueden usar ejecuta **!ayuda**"""
       % (dbp, amb, mvc))
-  
+
+@bot.command()
+async def help(ctx):
+  await ctx.send("Bobo es !ayuda")
+
 @bot.command()
 async def ayuda(ctx):
   author = ctx.message.author.mention
