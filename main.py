@@ -78,10 +78,6 @@ async def hola(ctx):
   await ctx.send(
       """Holaaa!!! Soy el fokin EPBot y he sido creado para teneros aqui a ralla. Mis creadores han sido nada mas y nada menos que **%s, %s y %s**, así que hay que respetarlos sinó os cae shit. Para saber que comandos se pueden usar ejecuta **!ayuda**"""
       % (dbp, amb, mvc))
-
-@bot.command()
-async def help(ctx):
-  await ctx.send("Eres bobo o que, es !ayuda :flag_es:")
   
 @bot.command()
 async def ayuda(ctx):
