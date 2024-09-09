@@ -467,6 +467,7 @@ async def gaming(ctx, game):
         )
       except Exception as e:
         print(f"No he podido enviar el mensaje para el id {id}. {e}")
+        await ctx.send(f"No he podido enviar el mensaje para el id {id}. {e}")
     await ctx.send("Enviando mensajes!")
   else:
     await ctx.send("Tienes que decir un juego bobo")
