@@ -383,6 +383,15 @@ async def meme_day():
                       value="El maldito viernes de humor negro!")
         mbed.set_image(url="attachment://vhn.png")
         await channel.send(file=file, embed=mbed)
+      if (today.strftime("%a") == "Sat"):
+        file = discord.File('media/snb.jpg', filename='snb.jpg')
+        mbed = discord.Embed(title='Sabaduu na balada 🕺',
+                            color=discord.Color.gold())
+        mbed.set_thumbnail(url="attachment://snb.jpg")
+        mbed.add_field(name="A galera começou a dançar!",
+                      value="E passou a menina mais linda Tomei coragem e comecei a falar!")
+        mbed.set_image(url="attachment://snb.jpg")
+        await channel.send(file=file, embed=mbed)
       if (today.strftime("%a") == "Sun"):
         file = discord.File('media/dds.jpg', filename='dds.jpg')
         mbed = discord.Embed(title='Domingo del señor!',
