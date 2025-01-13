@@ -36,6 +36,7 @@ bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)
 async def on_ready():
   print("Bot acitvated!")
   meme_day.start()
+  check_holiday.start()
   check_birthdays.start()
   weekly_movies.start()
   #check_premier.start()
@@ -331,6 +332,36 @@ def save_today_file(day, file):
   with open(file, 'a') as file:
     file.write(day.strftime("%d/%m/%Y") + '\n')
 
+@tasks.loop(hours=24)
+async def check_holiday():
+  channel = bot.get_channel(chateo)
+  holiday_file = 'json/holidays.json'
+  try:
+    if os.path.exists(holiday_file):
+        with open(holiday_file,'r', encoding='utf-8') as f:
+            holidays = json.load(f)
+
+            day = datetime.now().day
+            month = datetime.now().month
+            for holiday in holidays:
+                d = holiday.get('day')
+                if f"{day}/{month}" == d:
+                  media = holiday.get('media')
+                  filename = holiday.get('filename')
+                  title = holiday.get('title')
+                  name = holiday.get('name')
+                  value = holiday.get('value')
+                  url = f"attachment://{filename}"
+                                      
+                  file = discord.File(media, filename=filename)
+                  mbed = discord.Embed(title=title, color=discord.Color.gold())
+                  mbed.set_thumbnail(url=url)
+                  mbed.add_field(name=name,
+                              value=value)
+                  mbed.set_image(url=url)
+                  await channel.send(file=file, embed=mbed)
+  except Exception as e:
+    await channel.send(f"🔥Error al ejecutar comando !holiday: {e}")
 
 @tasks.loop(hours=24)
 async def meme_day():

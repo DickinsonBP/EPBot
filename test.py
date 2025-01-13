@@ -1,5 +1,7 @@
-from dotenv import load_dotenv
 import os
+import json
+from datetime import datetime
 
-load_dotenv()
-print(os.environ["TOKEN"])
+
+if __name__ == "__main__":
+    pass
