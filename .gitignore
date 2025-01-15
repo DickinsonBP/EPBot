@@ -1,6 +1,6 @@
-*.json
+# *.json
 *.txt
 .env
 .venv
-json/
+# json/
 extra_files/

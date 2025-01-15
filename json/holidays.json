@@ -1,0 +1,114 @@
+[
+    {
+        "day" : "01/01",
+        "media" : "media/AN.png",
+        "filename" : "AN.png",
+        "title" : "🕛🕛🕛🕛🕛",
+        "name" : "Año nuevo!!!",
+        "value" : "Hoy empieza el nuevo añoooooo!!!"
+    },
+    {
+        "day" : "25/12",
+        "media" : "media/NV.png",
+        "filename" : "NV.png",
+        "title" : "🎄🎄🎄🎄🎅🎅",
+        "name" : "Navidad!!!",
+        "value" : "Hoy es fokin Navidad, que os regalen muchas cosas!!!"
+    },
+    {
+        "day" : "12/10",
+        "media" : "media/HISP.png",
+        "filename" : "HISP.png",
+        "title" : "🇪🇸🇪🇸🇪🇸🇪🇸🇪🇸🇪🇸🇪🇸",
+        "name" : "Hispanidad!!!",
+        "value" : "Hoy nació Espanya!!!Felicidades wapa!!!"
+    },
+    {
+        "day" : "11/09",
+        "media" : "media/CAT.png",
+        "filename" : "CAT.png",
+        "title" : "🫏🫏🫏🫏",
+        "name" : "Catalonia!!!",
+        "value" : "Hoy tu dia CataluÑa!!!Felicidades wapa!!!"
+    },
+    {
+        "day" : "23/09",
+        "media" : "media/ST.png",
+        "filename" : "ST.png",
+        "title" : "🐓🐓🐓",
+        "name" : "Santa Tecla!!!",
+        "value" : "Hoy se celebra la doña Santa Tecla!!!"
+    },
+    {
+        "day" : "22/09",
+        "media" : "media/BA.png",
+        "filename" : "BA.png",
+        "title" : "🐓🐓🐓",
+        "name" : "Baixada de l'aliga!!!",
+        "value" : "Hoy baja el poyo!!!"
+    },
+    {
+        "day" : "19/08",
+        "media" : "media/SM.png",
+        "filename" : "SM.png",
+        "title" : "🚰🚰🚰🚰",
+        "name" : "Santa Majin!!!",
+        "value" : "Hoy se celebra el San Majin!!!"
+    },
+    {
+        "day" : "01/05",
+        "media" : "media/DT.png",
+        "filename" : "DT.png",
+        "title" : "👷👷👷👷",
+        "name" : "Worker's day!!!",
+        "value" : "Hoy es el dia del trabajador!!!"
+    },
+    {
+        "day" : "19/03",
+        "media" : "media/DP.png",
+        "filename" : "DP.png",
+        "title" : "🤔⁉️",
+        "name" : "Padre?",
+        "value" : "Hoy cumple el señor padre!!!"
+    },
+    {
+        "day" : "08/03",
+        "media" : "media/MT.png",
+        "filename" : "MT.png",
+        "title" : "🧹🧹🧹",
+        "name" : "Dia de la working women!!!!",
+        "value" : "Felicidades señoras!!!"
+    },
+    {
+        "day" : "21/04",
+        "media" : "media/MNA.png",
+        "filename" : "MNA.png",
+        "title" : "🐒🐒🐒🐒",
+        "name" : "Dia de la mona!!!!",
+        "value" : "Monky day!!!"
+    },
+    {
+        "day" : "16/01",
+        "media" : "media/CRT.png",
+        "filename" : "CRT.png",
+        "title" : "🍽️🍽️🍽️🍽️",
+        "name" : "Dia de la croquet!!!!",
+        "value" : "Ñamñam!!!"
+    },
+    {
+        "day" : "28/06",
+        "media" : "media/LGBTI.png",
+        "filename" : "LGBTI.png",
+        "title" : "🏳️‍🌈🏳️‍🌈🏳️‍🌈🏳️‍🌈",
+        "name" : "Dia del orullo LGBTIJKLMNÑ!!!!",
+        "value" : "OPQRSTUVWXYZ!!!"
+    },
+    {
+        "day" : "21/09",
+        "media" : "media/PAZ.png",
+        "filename" : "PAZ.png",
+        "title" : "🕊️🕊️🕊️🕊️🕊️",
+        "name" : "Dia de la paz!!!!",
+        "value" : "No se peguen hoy🚫🚫🙅"
+    }
+]
