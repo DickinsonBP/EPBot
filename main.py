@@ -337,6 +337,7 @@ async def check_holiday():
   channel = bot.get_channel(chateo)
   holiday_file = 'json/holidays.json'
   try:
+    print("Checking holiday")
     if os.path.exists(holiday_file):
         with open(holiday_file,'r', encoding='utf-8') as f:
             holidays = json.load(f)
@@ -360,6 +361,10 @@ async def check_holiday():
                               value=value)
                   mbed.set_image(url=url)
                   await channel.send(file=file, embed=mbed)
+                else:
+                  print(f"Hoy no hay holiday {day}/{month} != {d}")
+    else:
+      print(f"El archivo {holiday_file} no existe")
   except Exception as e:
     await channel.send(f"🔥Error al ejecutar comando !holiday: {e}")
 
