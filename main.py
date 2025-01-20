@@ -351,7 +351,8 @@ def get_next_holiday(file):
             holiday_dates.append((holiday_date, holiday))
         nearest_holiday = min(holiday_dates, key=lambda x: abs(x[0] - today))
     return nearest_holiday[1]
-
+  
+@bot.command()
 async def next_holiday(ctx):
   try:
     holiday_file = 'json/holidays.json'
