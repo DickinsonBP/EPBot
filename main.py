@@ -108,6 +108,11 @@ async def ayuda(ctx):
       value=
       "Muestra las peliculas de estreno de la semana actual. Ej: !movies",
       inline=False)
+  mbed.add_field(
+      name="**!next_holiday**",
+      value=
+      "Muestra el siguiente festivo. Ej: !next_holiday",
+      inline=False)
   mbed.add_field(name="**!hola**",
                  value="Sirve para mostrar el saludo del fokin bot",
                  inline=False)
@@ -331,6 +336,41 @@ def check_today_file(day, file):
 def save_today_file(day, file):
   with open(file, 'a') as file:
     file.write(day.strftime("%d/%m/%Y") + '\n')
+
+def get_next_holiday(file):
+    today = datetime.now()
+    year = today.year
+    with open(file, encoding='utf-8') as f:
+        data = json.load(f)
+        holiday_dates = []
+        for holiday in data:
+            holiday_date = datetime.strptime(f'{holiday["day"]}/{year}', "%d/%m/%Y")
+            if holiday_date < today:
+                holiday_date = holiday_date.replace(year=year + 1)
+            # print(holiday_date)
+            holiday_dates.append((holiday_date, holiday))
+        nearest_holiday = min(holiday_dates, key=lambda x: abs(x[0] - today))
+    return nearest_holiday[1]
+
+async def next_holiday(ctx):
+  holiday_file = 'json/holidays.json'
+  holiday = get_next_holiday(holiday_file)
+  
+  media = holiday.get('media')
+  filename = holiday.get('filename')
+  title = holiday.get('title')
+  name = holiday.get('name')
+  value = holiday.get('value')
+  url = f"attachment://{filename}"
+                      
+  file = discord.File(media, filename=filename)
+  mbed = discord.Embed(title=title, color=discord.Color.gold())
+  mbed.set_thumbnail(url=url)
+  mbed.add_field(name=name,
+              value=value)
+  mbed.set_image(url=url)
+  await ctx.send(file=file, embed=mbed)
+  
 
 @tasks.loop(hours=24)
 async def check_holiday():
