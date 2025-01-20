@@ -353,23 +353,26 @@ def get_next_holiday(file):
     return nearest_holiday[1]
 
 async def next_holiday(ctx):
-  holiday_file = 'json/holidays.json'
-  holiday = get_next_holiday(holiday_file)
-  
-  media = holiday.get('media')
-  filename = holiday.get('filename')
-  title = holiday.get('title')
-  name = holiday.get('name')
-  value = holiday.get('value')
-  url = f"attachment://{filename}"
-                      
-  file = discord.File(media, filename=filename)
-  mbed = discord.Embed(title=title, color=discord.Color.gold())
-  mbed.set_thumbnail(url=url)
-  mbed.add_field(name=name,
-              value=value)
-  mbed.set_image(url=url)
-  await ctx.send(file=file, embed=mbed)
+  try:
+    holiday_file = 'json/holidays.json'
+    holiday = get_next_holiday(holiday_file)
+    
+    media = holiday.get('media')
+    filename = holiday.get('filename')
+    title = holiday.get('title')
+    name = holiday.get('name')
+    value = holiday.get('value')
+    url = f"attachment://{filename}"
+                        
+    file = discord.File(media, filename=filename)
+    mbed = discord.Embed(title=title, color=discord.Color.gold())
+    mbed.set_thumbnail(url=url)
+    mbed.add_field(name=name,
+                value=value)
+    mbed.set_image(url=url)
+    await ctx.send(file=file, embed=mbed)
+  except Exception as e:
+    await ctx.send(f"🔥Error al ejecutar comando !next_holiday: {e}")
   
 
 @tasks.loop(hours=24)
